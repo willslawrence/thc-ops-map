@@ -78,7 +78,7 @@ fsr_note=""
 # 3. PILOT CURRENCY
 ###############################################################################
 overdue_rems="" due_now_rems="" due_soon_rems=""
-comp_overdue="" comp_due=""
+comp_overdue="" comp_this_month="" comp_next_month="" comp_soon=""
 
 for dir in "$PILOTS_DIR"/*/; do
   name=$(basename "$dir")
@@ -110,10 +110,15 @@ for dir in "$PILOTS_DIR"/*/; do
     next_due="${comp_year}-${comp_month}-01"
     next_due=$(date -jf "%Y-%m-%d" -v+1y "$next_due" "+%Y-%m-%d" 2>/dev/null || echo "$((comp_year+1))-${comp_month}-01")
     next_due_fmt=$(date -jf "%Y-%m-%d" "$next_due" "+%b %Y" 2>/dev/null || echo "$next_due")
-    if [[ "$next_due" < "$THIS_MONTH" ]]; then
+    next_due_ym="${next_due:0:7}"
+    if [[ "$next_due_ym" < "$THIS_YM" ]]; then
       comp_overdue="${comp_overdue}${last} (${next_due_fmt}), "
-    elif [[ "$next_due" < "$THREE_MONTHS" ]]; then
-      comp_due="${comp_due}${last} (${next_due_fmt}), "
+    elif [[ "$next_due_ym" == "$THIS_YM" ]]; then
+      comp_this_month="${comp_this_month}${last} (${next_due_fmt}), "
+    elif [[ "$next_due_ym" == "$NEXT_YM" ]]; then
+      comp_next_month="${comp_next_month}${last} (${next_due_fmt}), "
+    elif [[ "$next_due_ym" < "$THREE_YM" ]]; then
+      comp_soon="${comp_soon}${last} (${next_due_fmt}), "
     fi
   fi
 done
@@ -124,10 +129,16 @@ currency+="  <h4>Pilot Currency</h4>\n"
 if [ -n "$comp_overdue" ]; then
   currency+="  <div class=\"alert danger\">🔴 Competency overdue: ${comp_overdue%, }</div>\n"
 fi
-if [ -n "$comp_due" ]; then
-  currency+="  <div class=\"alert warn\">⚠️ Competency due soon: ${comp_due%, }</div>\n"
+if [ -n "$comp_this_month" ]; then
+  currency+="  <div class=\"alert warn\">⚠️ Competency due this month: ${comp_this_month%, }</div>\n"
 fi
-if [ -z "$comp_overdue" ] && [ -z "$comp_due" ]; then
+if [ -n "$comp_next_month" ]; then
+  currency+="  <div class=\"alert warn\">⚠️ Competency due next month: ${comp_next_month%, }</div>\n"
+fi
+if [ -n "$comp_soon" ]; then
+  currency+="  <div class=\"alert warn\">⚠️ Competency due soon: ${comp_soon%, }</div>\n"
+fi
+if [ -z "$comp_overdue" ] && [ -z "$comp_this_month" ] && [ -z "$comp_next_month" ] && [ -z "$comp_soon" ]; then
   currency+="  <div class=\"alert ok\">✅ Competency — all current</div>\n"
 fi
 
