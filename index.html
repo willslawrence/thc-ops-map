@@ -120,7 +120,8 @@
   <h4>Pilot Currency</h4>
   <div class="alert ok">✅ Competency — all current</div>
   <h4>30-Min REMS (Instrument Currency)</h4>
-  <div class="alert warn">⚠️ Due next month: Redlinksa (Mar 2026)</div>
+  <div class="alert warn">⚠️ Due within 3 months: Redlinksa (Mar 2026)</div>
+
   <!-- CURRENCY_END -->
   </div>
 </div>
@@ -132,22 +133,24 @@ const bases = {
   OEAO:  { lat: 26.485, lng: 38.126, name: "AL ULA" },
 };
 
+// FLEET_START
 const fleet = [
   { reg: "HZHC52", loc: "RUH", status: "parked", note: "For Sale" },
-  { reg: "HZHC54", loc: "OEHL", status: "parked", mission: "SMC PAX135" },
-  { reg: "HZHC55", loc: "OEAO", status: "flying", mission: "Filming – AlUla Tour", pilot: "Bonet" },
-  { reg: "HZHC57", loc: "RUH", status: "maint", note: "Post Dakar maint, ERTS 18-Jul" },
-  { reg: "HZHC58", loc: "OEHL", status: "parked", mission: "SMC Filming" },
+  { reg: "HZHC54", loc: "OEHL", status: "parked", mission: "PAX135 - SMC" },
+  { reg: "HZHC55", loc: "OEAO", status: "parked", mission: "Filming -133 - AlUla Tour 2026" },
+  { reg: "HZHC57", loc: "RUH", status: "maint", note: "Post Dakar" },
+  { reg: "HZHC58", loc: "OEHL", status: "parked", mission: "Filming -133 - SMC" },
   { reg: "HZHC59", loc: "RUH", status: "parked" },
-  { reg: "HZHC62", loc: "OEHL", status: "parked", mission: "SMC PAX135" },
-  { reg: "HZHC63", loc: "OEHL", status: "parked", mission: "SMC PAX135" },
-  { reg: "HZHC64", loc: "OETH", status: "maint", note: "MEL Hydraulic, waiting AC Oil" },
+  { reg: "HZHC62", loc: "OEHL", status: "parked", mission: "PAX135 - SMC" },
+  { reg: "HZHC63", loc: "OEHL", status: "parked", mission: "PAX135 - SMC" },
+  { reg: "HZHC64", loc: "OETH", status: "maint", note: "MEL Hydraulic, Waiting AC Oil" },
   { reg: "HZHC65", loc: "OETH", status: "parked" },
-  { reg: "HZHC66", loc: "RUH", status: "parked", note: "UAM Project" },
-  { reg: "HZHC67", loc: "OETH", status: "parked" },
+  { reg: "HZHC66", loc: "RUH", status: "parked", mission: "UAM" },
+  { reg: "HZHC67", loc: "OETH", status: "parked", mission: "UAM backup" },
   { reg: "HZHC68", loc: "OETH", status: "parked" },
   { reg: "HZHC69", loc: "OETH", status: "parked" },
 ];
+// FLEET_END
 
 const map = L.map('map', { zoomControl: false }).setView([26.2, 42.5], 6);
 L.control.zoom({ position: 'topright' }).addTo(map);
@@ -238,13 +241,15 @@ legend.onAdd = () => {
   const d = L.DomUtil.create('div', 'legend');
   d.onclick = () => d.classList.toggle('collapsed');
   d.innerHTML = `
-    <h4>🚁 H125 Fleet — 28 Jan 2026 ▾</h4>
+    <!-- LEGEND_START -->
+    <h4>🚁 H125 Fleet — <!-- LEGEND_DATE -->28 Jan 2026<!-- /LEGEND_DATE --> ▾</h4>
     <div class="legend-body">
       <div><span class="dot" style="background:#7eb8ff"></span>Serviceable (${fleet.filter(h=>h.status==='parked').length})</div>
       <div><span class="dot" style="background:#4caf50"></span>Flying today (${fleet.filter(h=>h.status==='flying').length})</div>
       <div><span class="dot" style="background:#ff9800"></span>Maintenance (${fleet.filter(h=>h.status==='maint').length})</div>
       <div style="margin-top:8px;font-size:11px;color:#888">HC53, HC56 — not in P135 FSR</div>
     </div>
+    <!-- LEGEND_END -->
   `;
   return d;
 };
