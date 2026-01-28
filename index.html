@@ -280,6 +280,51 @@
   .event-bar.current .connector { background: #2ecc71; }
   .event-bar.future .connector { background: #3498db; }
   .event-bar.pending .connector { background: #e74c3c; }
+
+  /* Event popup */
+  .event-popup {
+    position: fixed;
+    background: rgba(15, 15, 30, 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    min-width: 200px;
+    max-width: 280px;
+    z-index: 2000;
+    color: #fff;
+    font-size: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    display: none;
+  }
+  .event-popup.show { display: block; }
+  .event-popup h3 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .event-popup .status-badge {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .event-popup .status-badge.current { background: rgba(46, 204, 113, 0.3); color: #2ecc71; }
+  .event-popup .status-badge.future { background: rgba(52, 152, 219, 0.3); color: #3498db; }
+  .event-popup .status-badge.pending { background: rgba(231, 76, 60, 0.3); color: #e74c3c; }
+  .event-popup .detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .event-popup .detail-row:last-child { border-bottom: none; }
+  .event-popup .detail-label { color: #888; }
+  .event-popup .detail-value { color: #fff; font-weight: 500; }
 </style>
 </head>
 <body>
@@ -358,31 +403,31 @@
       <div class="lanes-above">
         <!-- Lane 1: Skybridge -->
         <div class="lane">
-          <div class="event-bar pending" style="left: 16.4%; width: 83.6%;">
+          <div class="event-bar pending" style="left: 16.4%; width: 83.6%;"
+               data-name="Skybridge" data-dates="Mar 1 – Dec 31" data-aircraft="TBA" data-pilots="TBA" data-status="pending">
             <span class="event-icon">🌉</span>
             <span class="event-title">Skybridge</span>
             <span class="event-dates">Mar 1 – Dec 31</span>
-            <span class="event-aircraft">TBA</span>
             <div class="connector" style="left: 5%;"></div>
           </div>
         </div>
-        <!-- Lane 2: AlUla Tour (separate from Al Fursan) -->
+        <!-- Lane 2: AlUla Tour -->
         <div class="lane">
-          <div class="event-bar current" style="left: 6.85%; width: 5.75%;">
+          <div class="event-bar current" style="left: 6.85%; width: 5.75%;"
+               data-name="AlUla Tour 2026" data-dates="Jan 25 – Feb 15" data-aircraft="HC55" data-pilots="Bonet" data-status="current">
             <span class="event-icon">🎬</span>
             <span class="event-title">AlUla Tour</span>
             <span class="event-dates">Jan 25 – Feb 15</span>
-            <span class="event-aircraft">HC55</span>
             <div class="connector" style="left: 50%;"></div>
           </div>
         </div>
-        <!-- Lane 3: Al Fursan Cup (own lane) -->
+        <!-- Lane 3: Al Fursan Cup -->
         <div class="lane">
-          <div class="event-bar future" style="left: 10.14%; width: 4%;">
+          <div class="event-bar future" style="left: 10.14%; width: 4%;"
+               data-name="Al Fursan Cup" data-dates="Feb 6 – 7" data-aircraft="HC55" data-pilots="Lisa" data-status="future">
             <span class="event-icon">🏆</span>
             <span class="event-title">Al Fursan Cup</span>
             <span class="event-dates">Feb 6 – 7</span>
-            <span class="event-aircraft">HC55</span>
             <div class="connector" style="left: 30%;"></div>
           </div>
         </div>
@@ -410,51 +455,54 @@
       <div class="lanes-below">
         <!-- Lane 1: Riyadh UAM -->
         <div class="lane">
-          <div class="event-bar pending" style="left: 25.21%; width: 74.79%;">
+          <div class="event-bar pending" style="left: 25.21%; width: 74.79%;"
+               data-name="Riyadh UAM" data-dates="Apr 2 – Dec 31" data-aircraft="HC66, HC67" data-pilots="TBA" data-status="pending">
             <span class="event-icon">🚁</span>
             <span class="event-title">Riyadh UAM</span>
             <span class="event-dates">Apr 2 – Dec 31</span>
-            <span class="event-aircraft">HC66/67</span>
             <div class="connector" style="left: 3%;"></div>
           </div>
         </div>
         <!-- Lane 2: Rally Hail -->
         <div class="lane">
-          <div class="event-bar current" style="left: 7.95%; width: 4%;">
+          <div class="event-bar current" style="left: 7.95%; width: 4%;"
+               data-name="Rally Hail 2026" data-dates="Jan 29 – Feb 1" data-aircraft="HC54, HC58, HC62, HC63" data-pilots="David, Stephan, Will, David L" data-status="current">
             <span class="event-icon">🏁</span>
             <span class="event-title">Rally Hail</span>
             <span class="event-dates">Jan 29 – Feb 1</span>
-            <span class="event-aircraft">HC54/58/62/63</span>
             <div class="connector" style="left: 20%;"></div>
           </div>
         </div>
-        <!-- Lane 3: Other rallies (non-overlapping) -->
+        <!-- Lane 3: Other rallies -->
         <div class="lane">
-          <div class="event-bar pending" style="left: 25.48%; width: 4%;">
+          <div class="event-bar pending" style="left: 25.48%; width: 4%;"
+               data-name="Al Jouf Rally" data-dates="Apr 3 – 4" data-aircraft="TBA" data-pilots="TBA" data-status="pending">
             <span class="event-icon">🏁</span>
             <span class="event-title">Al Jouf Rally</span>
             <span class="event-dates">Apr 3 – 4</span>
-            <span class="event-aircraft">TBA</span>
             <div class="connector" style="left: 15%;"></div>
           </div>
-          <div class="event-bar pending" style="left: 35.07%; width: 4%;">
+          <div class="event-bar pending" style="left: 35.07%; width: 4%;"
+               data-name="Rally Qassim 2026" data-dates="May 8 – 9" data-aircraft="TBA" data-pilots="TBA" data-status="pending">
             <span class="event-icon">🏁</span>
             <span class="event-title">Qassim Rally</span>
             <span class="event-dates">May 8 – 9</span>
-            <span class="event-aircraft">TBA</span>
             <div class="connector" style="left: 30%;"></div>
           </div>
-          <div class="event-bar pending" style="left: 92.60%; width: 4%;">
+          <div class="event-bar pending" style="left: 92.60%; width: 4%;"
+               data-name="Jeddah Rally 2026" data-dates="Dec 4 – 5" data-aircraft="TBA" data-pilots="TBA" data-status="pending">
             <span class="event-icon">🏁</span>
             <span class="event-title">Jeddah Rally</span>
             <span class="event-dates">Dec 4 – 5</span>
-            <span class="event-aircraft">TBA</span>
             <div class="connector" style="left: 30%;"></div>
           </div>
         </div>
       </div>
     </div>
     <!-- TIMELINE_END -->
+
+    <!-- Event Popup -->
+    <div class="event-popup" id="eventPopup"></div>
   </div>
 </div>
 
@@ -584,7 +632,53 @@ legend.onAdd = () => {
 };
 legend.addTo(map);
 
-// Vertical separation used - no overlap detection needed
+// Event popup handling
+const eventPopup = document.getElementById('eventPopup');
+
+document.querySelectorAll('.event-bar').forEach(bar => {
+  bar.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const data = bar.dataset;
+    const statusLabel = data.status === 'current' ? 'Current' : data.status === 'future' ? 'Upcoming' : 'Pending';
+    
+    eventPopup.innerHTML = `
+      <h3>
+        ${data.name}
+        <span class="status-badge ${data.status}">${statusLabel}</span>
+      </h3>
+      <div class="detail-row">
+        <span class="detail-label">Dates</span>
+        <span class="detail-value">${data.dates}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Aircraft</span>
+        <span class="detail-value">${data.aircraft}</span>
+      </div>
+      <div class="detail-row">
+        <span class="detail-label">Pilots</span>
+        <span class="detail-value">${data.pilots}</span>
+      </div>
+    `;
+    
+    // Position popup near the click
+    const rect = bar.getBoundingClientRect();
+    let left = rect.left;
+    let top = rect.bottom + 8;
+    
+    // Keep popup on screen
+    if (left + 280 > window.innerWidth) left = window.innerWidth - 290;
+    if (top + 150 > window.innerHeight) top = rect.top - 150;
+    
+    eventPopup.style.left = left + 'px';
+    eventPopup.style.top = top + 'px';
+    eventPopup.classList.add('show');
+  });
+});
+
+// Close popup when clicking outside
+document.addEventListener('click', () => {
+  eventPopup.classList.remove('show');
+});
 </script>
 </body>
 </html>
