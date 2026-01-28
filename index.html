@@ -43,14 +43,20 @@
     display: none;
   }
 
-  #briefing-panel {
+  .left-panels {
     position: fixed; top: 12px; left: 12px; z-index: 1000;
+    width: 310px; max-height: calc(100vh - 24px); overflow-y: auto;
+    display: flex; flex-direction: column; gap: 8px;
+    scrollbar-width: thin; scrollbar-color: #333 transparent;
+  }
+  .left-panels > div {
     background: rgba(15,15,30,0.75); backdrop-filter: blur(12px); color: #ddd;
     border-radius: 10px; border: 1px solid rgba(255,255,255,0.15);
-    width: 310px; max-height: 50vh; overflow-y: auto;
     padding: 16px 20px; font-size: 12px; line-height: 1.7;
-    display: block;
     scrollbar-width: thin; scrollbar-color: #333 transparent;
+  }
+  #briefing-panel {
+    display: block;
   }
   #briefing-panel .panel-header { cursor: pointer; user-select: none; }
   #briefing-panel .panel-header:hover { opacity: 0.8; }
@@ -82,7 +88,7 @@
   #currency-panel h4 { font-size: 12px; color: #7eb8ff; margin: 12px 0 5px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 3px; }
 
   #last-updated {
-    position: fixed; bottom: 12px; right: 12px; z-index: 1000;
+    position: fixed; top: 12px; right: 52px; z-index: 1000;
     background: rgba(15,15,30,0.75); backdrop-filter: blur(12px);
     color: #888; font-size: 11px;
     padding: 6px 12px; border-radius: 6px;
@@ -92,12 +98,10 @@
 </head>
 <body>
 <div id="map"></div>
-<div id="last-updated">Last updated: <!-- LAST_UPDATED -->28 Jan 2026 13:19<!-- /LAST_UPDATED --></div>
+<div id="last-updated">Last updated: <!-- LAST_UPDATED -->28 Jan 2026 13:34<!-- /LAST_UPDATED --></div>
 
-<div id="briefing-tab">
-  <div class="tab-title">📋 Ops Brief</div>
-  <div class="tab-date">OPS PLAN REPORT / <!-- REPORT_PERIOD -->28 JAN – 03 FEB 2026<!-- /REPORT_PERIOD --></div>
-</div>
+<div class="left-panels">
+
 <div id="briefing-panel">
   <div class="panel-header" onclick="this.parentElement.classList.toggle('collapsed')">
     <div class="panel-title">📋 Ops Brief ▾</div>
@@ -126,9 +130,9 @@
   </div>
 </div>
 
-<div id="currency-panel" style="position:fixed; top:12px; right:12px; z-index:1000; background:rgba(15,15,30,0.75); backdrop-filter:blur(12px); color:#ddd; border-radius:10px; border:1px solid rgba(255,255,255,0.15); width:340px; max-height:50vh; overflow-y:auto; padding:16px 20px; font-size:12px; line-height:1.7; display:block; scrollbar-width:thin; scrollbar-color:#333 transparent;">
-  <div class="panel-header" onclick="this.parentElement.classList.toggle('collapsed')" style="cursor:pointer; user-select:none;">
-    <div style="font-size:16px; font-weight:600; color:#fff; margin:0 0 2px;">🩺 Pilot Currency ▾</div>
+<div id="currency-panel">
+  <div class="panel-header" onclick="this.parentElement.classList.toggle('collapsed')">
+    <div class="panel-title">🩺 Pilot Currency ▾</div>
   </div>
   <div class="panel-body">
   <!-- CURRENCY_START -->
@@ -139,7 +143,7 @@
   <div class="alert warn">⚠️ Due next month (Feb): David Schicht — last flew August 2025</div>
   <div class="alert warn">⚠️ Due next month (Feb): Gilles Plaisance — last flew August 2025</div>
   <div class="alert warn">⚠️ Due next month (Feb): Nathan Piper — last flew August 2025</div>
-  <div class="alert danger">🔴 Overdue: Ivona Redlinksa — last flew April 2025 · Matt O'brien — last flew May 2025 · Matthias Klemp — last flew January 2025</div>
+  <div class="alert danger">🔴 Overdue: Matt O'brien — last flew May 2025 · Matthias Klemp — last flew January 2025</div>
   <h4>Medical Certificate (12 month validity)</h4>
   <div class="alert warn">⚠️ Expires this month: Nathan Piper — issued January 2025</div>
   <div class="alert warn">⚠️ Expires next month: Lisa le Roux — issued February 2025</div>
@@ -147,6 +151,8 @@
   <!-- CURRENCY_END -->
   </div>
 </div>
+
+</div><!-- /left-panels -->
 <script>
 const bases = {
   OETH:  { lat: 25.213, lng: 46.640, name: "THUMAMAH" },
