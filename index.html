@@ -37,10 +37,82 @@
   }
   .legend h4 { margin: 0 0 6px; font-size: 14px; color: #fff; }
   .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+
+  /* Briefing panel */
+  #briefing-tab {
+    position: fixed; top: 12px; right: 12px; z-index: 1000;
+    background: rgba(15,15,30,0.94); color: #ddd; padding: 10px 14px;
+    border-radius: 8px; border: 1px solid rgba(255,255,255,0.15);
+    cursor: pointer; font-size: 13px; font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  #briefing-tab:hover { background: rgba(15,15,30,1); border-color: #4ecdc4; }
+
+  #briefing-panel {
+    position: fixed; top: 12px; right: 12px; z-index: 1001;
+    background: rgba(15,15,30,0.96); color: #ddd;
+    border-radius: 10px; border: 1px solid rgba(255,255,255,0.15);
+    width: 380px; max-height: 50vh; overflow-y: auto;
+    padding: 16px 18px; font-size: 12px; line-height: 1.7;
+    display: none;
+    scrollbar-width: thin; scrollbar-color: #333 transparent;
+  }
+  #briefing-panel:hover { display: block; }
+  #briefing-tab:hover + #briefing-panel,
+  #briefing-panel:hover { display: block; }
+
+  #briefing-panel h3 { font-size: 14px; color: #fff; margin: 0 0 10px; }
+  #briefing-panel h4 { font-size: 12px; color: #4ecdc4; margin: 14px 0 6px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 3px; }
+  #briefing-panel .flight-row {
+    display: flex; gap: 8px; padding: 3px 0;
+    border-left: 2px solid #4ecdc4; padding-left: 8px; margin: 3px 0;
+  }
+  #briefing-panel .flight-row.today { border-left-color: #ff6b6b; }
+  #briefing-panel .flight-row .reg { font-weight: 700; min-width: 48px; font-size: 11px; }
+  #briefing-panel .flight-row .info { flex: 1; font-size: 11px; color: #aaa; }
+  #briefing-panel .flight-row .pilot { font-size: 11px; color: #888; }
+  #briefing-panel .alert { padding: 3px 8px; border-radius: 4px; font-size: 11px; margin: 3px 0; }
+  #briefing-panel .alert.ok { background: rgba(76,175,80,0.15); border-left: 2px solid #4caf50; }
+  #briefing-panel .alert.warn { background: rgba(255,193,7,0.12); border-left: 2px solid #ffc107; }
+  #briefing-panel .alert.danger { background: rgba(255,82,82,0.12); border-left: 2px solid #ff5252; }
 </style>
 </head>
 <body>
 <div id="map"></div>
+
+<div id="briefing-tab">📋 Ops Brief</div>
+<div id="briefing-panel">
+  <h3>🚁 Part 135 Brief — 28 Jan – 01 Feb</h3>
+
+  <h4>Today — 28 Jan</h4>
+  <div class="flight-row today">
+    <span class="reg">HC55</span>
+    <span class="info">Filming – AlUla Tour 2026</span>
+    <span class="pilot">Bonet</span>
+  </div>
+
+  <h4>29 Jan</h4>
+  <div class="flight-row"><span class="reg">HC54</span><span class="info">Repo OEHL → XHML · SMC</span><span class="pilot">Schicht</span></div>
+  <div class="flight-row"><span class="reg">HC62</span><span class="info">Repo OEHL → XHML · SMC</span><span class="pilot">Lawrence</span></div>
+  <div class="flight-row"><span class="reg">HC58</span><span class="info">Repo OEHL → XHML · SMC</span><span class="pilot">Mayer</span></div>
+  <div class="flight-row"><span class="reg">HC63</span><span class="info">Repo OEHL → XHML · SMC</span><span class="pilot">Leipsig</span></div>
+  <div class="flight-row"><span class="reg">HC55</span><span class="info">Filming – AlUla Tour 2026</span><span class="pilot">TBA</span></div>
+
+  <h4>30–31 Jan — SMC Surge</h4>
+  <div class="flight-row"><span class="reg">HC58</span><span class="info">Filming (both days) · XHML</span><span class="pilot">Mayer</span></div>
+  <div class="flight-row"><span class="reg">HC54/62/63</span><span class="info">PAX135 (both days) · XHML</span><span class="pilot">TBA</span></div>
+  <div class="flight-row"><span class="reg">HC55</span><span class="info">Filming – AlUla (both days)</span><span class="pilot">TBA</span></div>
+
+  <h4>01 Feb — Demob</h4>
+  <div class="flight-row"><span class="reg">HC58/63</span><span class="info">Repo XHML → OEGS → OETH</span><span class="pilot">Mayer & Leipsig</span></div>
+  <div class="flight-row"><span class="reg">HC54/62</span><span class="info">Repo OEHL → OEGS → OETH</span><span class="pilot">TBA</span></div>
+
+  <h4>Pilot Currency</h4>
+  <div class="alert ok">✅ Competency — Jan & Feb clear</div>
+  <div class="alert warn">⚠️ REMS due now: Nathan Piper (Jul)</div>
+  <div class="alert warn">⚠️ REMS due Feb: David Leipsig (Aug)</div>
+  <div class="alert danger">🔴 Overdue: Redlinksa (Apr) · O'Brien (May)</div>
+</div>
 <script>
 const bases = {
   OETH:  { lat: 25.213, lng: 46.640, name: "THUMAMAH" },
