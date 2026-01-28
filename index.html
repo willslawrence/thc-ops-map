@@ -127,13 +127,13 @@ const bases = {
 
 const fleet = [
   { reg: "HZHC52", loc: "RUH", status: "parked", note: "For Sale" },
-  { reg: "HZHC54", loc: "OEHL", status: "parked" },
+  { reg: "HZHC54", loc: "OEHL", status: "parked", mission: "SMC PAX135" },
   { reg: "HZHC55", loc: "OEAO", status: "flying", mission: "Filming – AlUla Tour", pilot: "Bonet" },
   { reg: "HZHC57", loc: "RUH", status: "maint", note: "Post Dakar maint, ERTS 05-Feb" },
-  { reg: "HZHC58", loc: "OEHL", status: "parked" },
+  { reg: "HZHC58", loc: "OEHL", status: "parked", mission: "SMC Filming" },
   { reg: "HZHC59", loc: "RUH", status: "parked" },
-  { reg: "HZHC62", loc: "OEHL", status: "parked" },
-  { reg: "HZHC63", loc: "OEHL", status: "parked" },
+  { reg: "HZHC62", loc: "OEHL", status: "parked", mission: "SMC PAX135" },
+  { reg: "HZHC63", loc: "OEHL", status: "parked", mission: "SMC PAX135" },
   { reg: "HZHC64", loc: "OETH", status: "maint", note: "MEL Hydraulic" },
   { reg: "HZHC65", loc: "OETH", status: "parked" },
   { reg: "HZHC66", loc: "RUH", status: "parked", note: "UAM Project" },
@@ -201,9 +201,10 @@ fleet.forEach(h => {
     })
   }).addTo(map).bindPopup(
     `<b>${h.reg}</b><br>Base: ${h.loc}` +
-    (h.mission ? `<br>${h.mission}` : '') +
-    (h.pilot ? `<br>PIC: ${h.pilot}` : '') +
-    (h.status === 'aog' ? '<br><em>Aircraft on Ground</em>' : '')
+    `<br>Status: ${h.status === 'flying' ? '🟢 Flying' : h.status === 'maint' ? '🟠 Maintenance' : h.status === 'aog' ? '🔴 AOG' : '🔵 Serviceable'}` +
+    (h.note ? `<br><em>${h.note}</em>` : '') +
+    (h.mission ? `<br>Mission: ${h.mission}` : '') +
+    (h.pilot ? `<br>PIC: ${h.pilot}` : '')
   );
 });
 
