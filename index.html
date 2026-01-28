@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fleet Map — 28 Jan 2026</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  body { margin: 0; }
+  #map { width: 100vw; height: 100vh; }
+  .heli-pin {
+    background: rgba(0,0,0,0.85); color: #4ecdc4; padding: 3px 7px;
+    border-radius: 4px; font-size: 11px; font-weight: 700;
+    white-space: nowrap; border: 1.5px solid #4ecdc4;
+    text-align: center; line-height: 1.3;
+  }
+  .heli-pin.flying {
+    color: #ff6b6b; border-color: #ff6b6b;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .heli-pin.aog { color: #888; border-color: #666; }
+  .heli-pin .sub { font-size: 9px; font-weight: 400; opacity: 0.7; display: block; }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,107,0.5); }
+    50% { box-shadow: 0 0 8px 3px rgba(255,107,107,0.3); }
+  }
+  .base-label {
+    background: none; color: rgba(255,255,255,0.4);
+    font-size: 13px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .legend {
+    background: rgba(15,15,30,0.92); color: #ddd; padding: 14px 18px;
+    border-radius: 8px; font-size: 12px; line-height: 2.2;
+    border: 1px solid rgba(255,255,255,0.12); min-width: 180px;
+  }
+  .legend h4 { margin: 0 0 6px; font-size: 14px; color: #fff; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script>
+const bases = {
+  OETH:  { lat: 25.213, lng: 46.640, name: "THUMAMAH" },
+  XRSC:  { lat: 24.680, lng: 46.820, name: "ALSALAM" },
+  OEHL:  { lat: 27.438, lng: 41.686, name: "HA'IL" },
+  OEAO:  { lat: 26.485, lng: 38.126, name: "AL ULA" },
+};
+
+const fleet = [
+  { reg: "HZHC52", loc: "OETH", status: "parked" },
+  { reg: "HZHC53", loc: "OETH", status: "parked" },
+  { reg: "HZHC54", loc: "OEHL", status: "parked" },
+  { reg: "HZHC55", loc: "OEAO", status: "flying", mission: "Filming – AlUla Tour", pilot: "Bonet" },
+  { reg: "HZHC56", loc: "OETH", status: "parked" },
+  { reg: "HZHC57", loc: "OETH", status: "parked" },
+  { reg: "HZHC58", loc: "OEHL", status: "parked" },
+  { reg: "HZHC59", loc: "OEHL", status: "parked" },
+  { reg: "HZHC62", loc: "OEHL", status: "parked" },
+  { reg: "HZHC63", loc: "OEHL", status: "parked" },
+  { reg: "HZHC64", loc: "OETH", status: "parked" },
+  { reg: "HZHC66", loc: "OETH", status: "parked" },
+  { reg: "HZHC67", loc: "XRSC", status: "aog" },
+  { reg: "HZHC68", loc: "XRSC", status: "aog" },
+];
+
+const map = L.map('map', { zoomControl: false }).setView([26.2, 42.5], 6);
+L.control.zoom({ position: 'topright' }).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© OSM © CARTO', maxZoom: 18
+}).addTo(map);
+
+// Base labels
+Object.values(bases).forEach(b => {
+  L.marker([b.lat, b.lng], {
+    icon: L.divIcon({ className: 'base-label', html: b.name, iconAnchor: [40, -20] }),
+    interactive: false
+  }).addTo(map);
+  // subtle base circle
+  L.circle([b.lat, b.lng], { radius: 18000, color: 'rgba(255,255,255,0.08)', fillColor: 'rgba(255,255,255,0.03)', weight: 1 }).addTo(map);
+});
+
+// Group fleet by location
+const groups = {};
+fleet.forEach(h => {
+  if (!groups[h.loc]) groups[h.loc] = [];
+  groups[h.loc].push(h);
+});
+
+// Place helicopters in a grid around each base
+fleet.forEach(h => {
+  const b = bases[h.loc];
+  if (!b) return;
+  const g = groups[h.loc];
+  const i = g.indexOf(h);
+  const cols = Math.min(g.length, 3);
+  const row = Math.floor(i / cols);
+  const col = i % cols;
+  // Center the grid
+  const totalRows = Math.ceil(g.length / cols);
+  const latOff = (row - (totalRows - 1) / 2) * 0.25;
+  const lngOff = (col - (cols - 1) / 2) * 0.55;
+  const lat = b.lat + latOff;
+  const lng = b.lng + lngOff;
+
+  const cls = h.status === 'flying' ? 'flying' : h.status === 'aog' ? 'aog' : '';
+  let label = h.reg.replace('HZHC','HC');
+  if (h.pilot) label += `<span class="sub">${h.pilot}</span>`;
+  if (h.status === 'aog') label += `<span class="sub">AOG</span>`;
+
+  const color = h.status === 'flying' ? '#ff6b6b' : h.status === 'aog' ? '#666' : '#4ecdc4';
+  L.circleMarker([lat, lng], {
+    radius: 5, fillColor: color, color: '#fff', weight: 1, fillOpacity: 0.85
+  }).addTo(map);
+
+  L.marker([lat, lng], {
+    icon: L.divIcon({
+      className: `heli-pin ${cls}`,
+      html: label,
+      iconSize: [65, 30],
+      iconAnchor: [-8, 15]
+    })
+  }).addTo(map).bindPopup(
+    `<b>${h.reg}</b><br>Base: ${h.loc}` +
+    (h.mission ? `<br>${h.mission}` : '') +
+    (h.pilot ? `<br>PIC: ${h.pilot}` : '') +
+    (h.status === 'aog' ? '<br><em>Aircraft on Ground</em>' : '')
+  );
+});
+
+// Today's flight route: OEAO → filming point → OEAO
+const filmLat = 26 + 48/60 + 46.92/3600;
+const filmLng = 37 + 56/60 + 7.56/3600;
+const ao = bases.OEAO;
+L.polyline([[ao.lat, ao.lng],[filmLat, filmLng]], {
+  color: '#ff6b6b', weight: 2.5, opacity: 0.5, dashArray: '10 8'
+}).addTo(map).bindPopup('<b>HC55 – Filming</b><br>AlUla Tour 2026<br>PIC: Julio Bonet');
+
+L.circleMarker([filmLat, filmLng], {
+  radius: 5, fillColor: '#ff6b6b', color: '#fff', weight: 1, fillOpacity: 0.6
+}).addTo(map).bindPopup("Filming Point<br>26°48'47\"N 37°56'08\"E");
+
+// Fit
+const pts = fleet.filter(h => bases[h.loc]).map(h => [bases[h.loc].lat, bases[h.loc].lng]);
+pts.push([filmLat, filmLng]);
+map.fitBounds(L.latLngBounds(pts).pad(0.15));
+
+// Legend
+const legend = L.control({ position: 'bottomleft' });
+legend.onAdd = () => {
+  const d = L.DomUtil.create('div', 'legend');
+  d.innerHTML = `
+    <h4>🚁 H125 Fleet — 28 Jan 2026</h4>
+    <div><span class="dot" style="background:#4ecdc4"></span>Parked (${fleet.filter(h=>h.status==='parked').length})</div>
+    <div><span class="dot" style="background:#ff6b6b"></span>Flying today (${fleet.filter(h=>h.status==='flying').length})</div>
+    <div><span class="dot" style="background:#666"></span>AOG (${fleet.filter(h=>h.status==='aog').length})</div>
+    <div style="margin-top:8px;font-size:11px;color:#888">HC65, HC69 — location unknown</div>
+  `;
+  return d;
+};
+legend.addTo(map);
+</script>
+</body>
+</html>
