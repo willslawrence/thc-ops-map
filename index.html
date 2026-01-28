@@ -6,9 +6,13 @@
 <title>Fleet Map — 28 Jan 2026</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  body { margin: 0; }
-  #map { width: 100vw; height: 100vh; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Inter', -apple-system, sans-serif; }
+  #map { width: 100vw; height: 100vh; transition: height 0.3s ease; }
+  body.timeline-open #map { height: calc(100vh - 160px); }
+  
   .heli-pin {
     background: rgba(0,0,0,0.85); color: #7eb8ff; padding: 1px 4px;
     border-radius: 3px; font-size: 11px; font-weight: 700;
@@ -38,35 +42,27 @@
   .legend h4 { margin: 0 0 6px; font-size: 14px; color: #fff; }
   .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
 
-  /* Briefing panel — permanently shown on right */
-  #briefing-tab {
-    display: none;
-  }
-
   .left-panels {
     position: fixed; top: 12px; left: 12px; z-index: 1000;
     width: 310px; max-height: calc(100vh - 24px); overflow-y: auto;
     display: flex; flex-direction: column; gap: 8px;
     scrollbar-width: thin; scrollbar-color: #333 transparent;
   }
+  body.timeline-open .left-panels { max-height: calc(100vh - 184px); }
   .left-panels > div {
     background: rgba(15,15,30,0.75); backdrop-filter: blur(12px); color: #ddd;
     border-radius: 10px; border: 1px solid rgba(255,255,255,0.15);
     padding: 16px 20px; font-size: 12px; line-height: 1.7;
     scrollbar-width: thin; scrollbar-color: #333 transparent;
   }
-  #briefing-panel {
-    display: block;
-  }
+  #briefing-panel { display: block; }
   #briefing-panel .panel-header { cursor: pointer; user-select: none; }
   #briefing-panel .panel-header:hover { opacity: 0.8; }
   #briefing-panel .panel-title { font-size: 16px; font-weight: 600; color: #fff; margin: 0 0 2px; }
   #briefing-panel .panel-date { font-size: 11px; color: #888; margin: 0 0 12px; }
   #briefing-panel .panel-body { transition: all 0.3s ease; }
   #briefing-panel.collapsed .panel-body { display: none; }
-  #briefing-panel.collapsed { max-height: none; overflow: hidden; }
   #currency-panel.collapsed .panel-body { display: none; }
-  #currency-panel.collapsed { max-height: none; overflow: hidden; }
 
   .legend { cursor: pointer; user-select: none; }
   .legend:hover { opacity: 0.9; }
@@ -94,11 +90,208 @@
     padding: 6px 12px; border-radius: 6px;
     border: 1px solid rgba(255,255,255,0.1);
   }
+
+  /* Timeline Panel */
+  .timeline-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 160px;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+    border-top: 2px solid rgba(46, 204, 113, 0.5);
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+    overflow: hidden;
+  }
+  body.timeline-open .timeline-panel { transform: translateY(0); }
+
+  .timeline-toggle {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(15,15,30,0.85);
+    backdrop-filter: blur(12px);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    z-index: 1001;
+    transition: all 0.3s ease;
+  }
+  body.timeline-open .timeline-toggle { bottom: 170px; }
+  .timeline-toggle:hover { background: rgba(46, 204, 113, 0.3); border-color: rgba(46, 204, 113, 0.5); }
+
+  /* Timeline Content */
+  .timeline-content {
+    padding: 8px 20px;
+    height: 100%;
+    overflow-x: auto;
+  }
+  .timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .timeline-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #2ecc71, #3498db);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .timeline-legend {
+    display: flex;
+    gap: 12px;
+    font-size: 0.55rem;
+    color: #888;
+  }
+  .timeline-legend span { display: flex; align-items: center; gap: 4px; }
+  .tl-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .tl-dot.current { background: #2ecc71; }
+  .tl-dot.future { background: #3498db; }
+  .tl-dot.pending { background: #e74c3c; }
+
+  .timeline-body {
+    position: relative;
+    min-width: 900px;
+  }
+  .lanes-above { padding-bottom: 6px; }
+  .timeline-axis {
+    position: relative;
+    height: 18px;
+    display: flex;
+    align-items: center;
+  }
+  .axis-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #2ecc71, #3498db, #2ecc71);
+    transform: translateY(-50%);
+  }
+  .month-markers {
+    position: relative;
+    width: 100%;
+    display: flex;
+    z-index: 10;
+  }
+  .month-marker {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+  }
+  .month-marker::before {
+    content: '';
+    width: 1px;
+    height: 6px;
+    background: #3498db;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .month-label {
+    font-size: 0.45rem;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #0a0a0a;
+    padding: 1px 3px;
+    border-radius: 2px;
+  }
+  .today-marker {
+    position: absolute;
+    top: -50px;
+    bottom: -50px;
+    width: 2px;
+    background: #fff;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+    z-index: 100;
+  }
+  .today-label {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.4rem;
+    font-weight: 600;
+    color: #fff;
+    text-transform: uppercase;
+    white-space: nowrap;
+    background: rgba(255,255,255,0.15);
+    padding: 1px 4px;
+    border-radius: 2px;
+  }
+  .lanes-below { padding-top: 6px; }
+  .lane {
+    position: relative;
+    height: 18px;
+    margin-bottom: 2px;
+  }
+  .event-bar {
+    position: absolute;
+    height: 16px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    overflow: hidden;
+    font-size: 0.5rem;
+  }
+  .event-bar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+  }
+  .event-bar.current {
+    background: linear-gradient(135deg, rgba(46, 204, 113, 0.85), rgba(46, 204, 113, 0.65));
+    border: 1px solid rgba(46, 204, 113, 0.6);
+  }
+  .event-bar.future {
+    background: linear-gradient(135deg, rgba(52, 152, 219, 0.85), rgba(52, 152, 219, 0.65));
+    border: 1px solid rgba(52, 152, 219, 0.6);
+  }
+  .event-bar.pending {
+    background: linear-gradient(135deg, rgba(231, 76, 60, 0.85), rgba(231, 76, 60, 0.65));
+    border: 1px solid rgba(231, 76, 60, 0.6);
+  }
+  .event-icon { font-size: 0.65rem; margin-right: 4px; flex-shrink: 0; }
+  .event-title { font-size: 0.5rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; color: #fff; }
+  .event-dates { font-size: 0.4rem; opacity: 0.8; margin-left: 4px; white-space: nowrap; flex-shrink: 0; }
+  .event-aircraft { font-size: 0.35rem; opacity: 0.7; background: rgba(0,0,0,0.2); padding: 1px 3px; border-radius: 2px; margin-left: 4px; flex-shrink: 0; }
+  .connector {
+    position: absolute;
+    width: 1px;
+    opacity: 0.4;
+  }
+  .lanes-above .connector { bottom: -6px; height: 6px; }
+  .lanes-below .connector { top: -6px; height: 6px; }
+  .event-bar.current .connector { background: #2ecc71; }
+  .event-bar.future .connector { background: #3498db; }
+  .event-bar.pending .connector { background: #e74c3c; }
 </style>
 </head>
 <body>
 <div id="map"></div>
-<div id="last-updated">Last updated: <!-- LAST_UPDATED -->28 Jan 2026 13:57<!-- /LAST_UPDATED --></div>
+<div id="last-updated">Last updated: <!-- LAST_UPDATED -->28 Jan 2026 15:30<!-- /LAST_UPDATED --></div>
+
+<!-- Timeline Toggle Button -->
+<button class="timeline-toggle" onclick="toggleTimeline()">📅 Missions</button>
 
 <div class="left-panels">
 
@@ -147,13 +340,112 @@
   <h4>Medical Certificate (12 month validity)</h4>
   <div class="alert warn">⚠️ Expires this month: Nathan Piper — issued January 2025</div>
   <div class="alert warn">⚠️ Expires next month: Lisa le Roux — issued February 2025</div>
-
   <!-- CURRENCY_END -->
   </div>
 </div>
 
 </div><!-- /left-panels -->
+
+<!-- Timeline Panel -->
+<div class="timeline-panel">
+  <div class="timeline-content">
+    <div class="timeline-header">
+      <div class="timeline-title">THC Missions 2026</div>
+      <div class="timeline-legend">
+        <span><div class="tl-dot current"></div>Current</span>
+        <span><div class="tl-dot future"></div>Future</span>
+        <span><div class="tl-dot pending"></div>Pending</span>
+      </div>
+    </div>
+    <!-- TIMELINE_START -->
+    <div class="timeline-body">
+      <div class="lanes-above">
+        <div class="lane">
+          <div class="event-bar pending" style="left: 16.4%; width: 83.6%;">
+            <span class="event-icon">🌉</span>
+            <span class="event-title">Skybridge</span>
+            <span class="event-dates">Mar 1 – Dec 31</span>
+            <span class="event-aircraft">TBA</span>
+            <div class="connector" style="left: 5%;"></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="event-bar current" style="left: 4.1%; width: 10%;">
+            <span class="event-icon">🎬</span>
+            <span class="event-title">AlUla Tour</span>
+            <span class="event-dates">Jan 15 – Feb 15</span>
+            <span class="event-aircraft">HC55</span>
+            <div class="connector" style="left: 50%;"></div>
+          </div>
+          <div class="event-bar future" style="left: 15%; width: 10%;">
+            <span class="event-icon">🏆</span>
+            <span class="event-title">Al Fursan Cup</span>
+            <span class="event-dates">Feb 6 – 7</span>
+            <span class="event-aircraft">TBA</span>
+            <div class="connector" style="left: 30%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="timeline-axis">
+        <div class="axis-line"></div>
+        <div class="month-markers">
+          <div class="month-marker"><span class="month-label">Jan</span></div>
+          <div class="month-marker"><span class="month-label">Feb</span></div>
+          <div class="month-marker"><span class="month-label">Mar</span></div>
+          <div class="month-marker"><span class="month-label">Apr</span></div>
+          <div class="month-marker"><span class="month-label">May</span></div>
+          <div class="month-marker"><span class="month-label">Jun</span></div>
+          <div class="month-marker"><span class="month-label">Jul</span></div>
+          <div class="month-marker"><span class="month-label">Aug</span></div>
+          <div class="month-marker"><span class="month-label">Sep</span></div>
+          <div class="month-marker"><span class="month-label">Oct</span></div>
+          <div class="month-marker"><span class="month-label">Nov</span></div>
+          <div class="month-marker"><span class="month-label">Dec</span></div>
+        </div>
+        <div class="today-marker" style="left: 7.67%;">
+          <span class="today-label">Today</span>
+        </div>
+      </div>
+
+      <div class="lanes-below">
+        <div class="lane">
+          <div class="event-bar future" style="left: 25.2%; width: 74.8%;">
+            <span class="event-icon">🚁</span>
+            <span class="event-title">Riyadh UAM</span>
+            <span class="event-dates">Apr 2 – Dec 31</span>
+            <span class="event-aircraft">HC66/67</span>
+            <div class="connector" style="left: 3%;"></div>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="event-bar current" style="left: 7.7%; width: 11%;">
+            <span class="event-icon">🏁</span>
+            <span class="event-title">Rally Hail</span>
+            <span class="event-dates">Jan 29 – Feb 1</span>
+            <span class="event-aircraft">HC54/58/62/63</span>
+            <div class="connector" style="left: 20%;"></div>
+          </div>
+          <div class="event-bar pending" style="left: 25.2%; width: 10%;">
+            <span class="event-icon">🏁</span>
+            <span class="event-title">Al Jouf Rally</span>
+            <span class="event-dates">Apr 3 – 4</span>
+            <span class="event-aircraft">TBA</span>
+            <div class="connector" style="left: 15%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- TIMELINE_END -->
+  </div>
+</div>
+
 <script>
+function toggleTimeline() {
+  document.body.classList.toggle('timeline-open');
+  setTimeout(() => map.invalidateSize(), 350);
+}
+
 const bases = {
   OETH:  { lat: 25.213, lng: 46.640, name: "THUMAMAH" },
   RUH:   { lat: 24.680, lng: 46.820, name: "ALSALAM (RUH)" },
@@ -186,24 +478,20 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
   attribution: '© OSM © CARTO', maxZoom: 18
 }).addTo(map);
 
-// Base labels
 Object.values(bases).forEach(b => {
   L.marker([b.lat, b.lng], {
     icon: L.divIcon({ className: 'base-label', html: b.name, iconAnchor: [40, -20] }),
     interactive: false
   }).addTo(map);
-  // subtle base circle
   L.circle([b.lat, b.lng], { radius: 18000, color: 'rgba(255,255,255,0.08)', fillColor: 'rgba(255,255,255,0.03)', weight: 1 }).addTo(map);
 });
 
-// Group fleet by location
 const groups = {};
 fleet.forEach(h => {
   if (!groups[h.loc]) groups[h.loc] = [];
   groups[h.loc].push(h);
 });
 
-// Place helicopters in a grid around each base
 fleet.forEach(h => {
   const b = bases[h.loc];
   if (!b) return;
@@ -212,7 +500,6 @@ fleet.forEach(h => {
   const cols = Math.min(g.length, 3);
   const row = Math.floor(i / cols);
   const col = i % cols;
-  // Center the grid
   const totalRows = Math.ceil(g.length / cols);
   const latOff = (row - (totalRows - 1) / 2) * 0.15;
   const lngOff = (col - (cols - 1) / 2) * 0.35;
@@ -246,7 +533,6 @@ fleet.forEach(h => {
   );
 });
 
-// Today's flight route: OEAO → filming point → OEAO
 const filmLat = 26 + 48/60 + 46.92/3600;
 const filmLng = 37 + 56/60 + 7.56/3600;
 const ao = bases.OEAO;
@@ -258,12 +544,10 @@ L.circleMarker([filmLat, filmLng], {
   radius: 5, fillColor: '#4caf50', color: '#fff', weight: 1, fillOpacity: 0.6
 }).addTo(map).bindPopup("Filming Point<br>26°48'47\"N 37°56'08\"E");
 
-// Fit
 const pts = fleet.filter(h => bases[h.loc]).map(h => [bases[h.loc].lat, bases[h.loc].lng]);
 pts.push([filmLat, filmLng]);
 map.fitBounds(L.latLngBounds(pts).pad(0.15));
 
-// Legend
 const legend = L.control({ position: 'bottomleft' });
 legend.onAdd = () => {
   const d = L.DomUtil.create('div', 'legend');
