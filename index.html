@@ -52,8 +52,17 @@
     display: block;
     scrollbar-width: thin; scrollbar-color: #333 transparent;
   }
+  #briefing-panel .panel-header { cursor: pointer; user-select: none; }
+  #briefing-panel .panel-header:hover { opacity: 0.8; }
   #briefing-panel .panel-title { font-size: 16px; font-weight: 600; color: #fff; margin: 0 0 2px; }
   #briefing-panel .panel-date { font-size: 11px; color: #888; margin: 0 0 12px; }
+  #briefing-panel .panel-body { transition: all 0.3s ease; }
+  #briefing-panel.collapsed .panel-body { display: none; }
+  #briefing-panel.collapsed { max-height: none; overflow: hidden; }
+
+  .legend { cursor: pointer; user-select: none; }
+  .legend:hover { opacity: 0.9; }
+  .legend.collapsed .legend-body { display: none; }
 
   #briefing-panel h4 { font-size: 12px; color: #7eb8ff; margin: 12px 0 5px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 3px; }
   #briefing-panel .flight-row {
@@ -78,8 +87,11 @@
   <div class="tab-date">OPS PLAN REPORT / 28 JAN – 03 FEB 2026</div>
 </div>
 <div id="briefing-panel">
-  <div class="panel-title">📋 Ops Brief</div>
-  <div class="panel-date">OPS PLAN REPORT / 28 JAN – 03 FEB 2026</div>
+  <div class="panel-header" onclick="this.parentElement.classList.toggle('collapsed')">
+    <div class="panel-title">📋 Ops Brief ▾</div>
+    <div class="panel-date">OPS PLAN REPORT / 28 JAN – 03 FEB 2026</div>
+  </div>
+  <div class="panel-body">
 
   <h4>Today — 28 Jan</h4>
   <div class="flight-row today">
@@ -110,6 +122,7 @@
   <div class="alert warn">⚠️ Due now: Nathan Piper (Jul)</div>
   <div class="alert warn">⚠️ Due Feb: David Leipsig (Aug)</div>
   <div class="alert danger">🔴 Overdue: Redlinksa (Apr) · O'Brien (May)</div>
+  </div>
 </div>
 <script>
 const bases = {
@@ -223,12 +236,15 @@ map.fitBounds(L.latLngBounds(pts).pad(0.15));
 const legend = L.control({ position: 'bottomleft' });
 legend.onAdd = () => {
   const d = L.DomUtil.create('div', 'legend');
+  d.onclick = () => d.classList.toggle('collapsed');
   d.innerHTML = `
-    <h4>🚁 H125 Fleet — 28 Jan 2026</h4>
-    <div><span class="dot" style="background:#7eb8ff"></span>Serviceable (${fleet.filter(h=>h.status==='parked').length})</div>
-    <div><span class="dot" style="background:#4caf50"></span>Flying today (${fleet.filter(h=>h.status==='flying').length})</div>
-    <div><span class="dot" style="background:#ff9800"></span>Maintenance (${fleet.filter(h=>h.status==='maint').length})</div>
-    <div style="margin-top:8px;font-size:11px;color:#888">HC53, HC56 — not in P135 FSR</div>
+    <h4>🚁 H125 Fleet — 28 Jan 2026 ▾</h4>
+    <div class="legend-body">
+      <div><span class="dot" style="background:#7eb8ff"></span>Serviceable (${fleet.filter(h=>h.status==='parked').length})</div>
+      <div><span class="dot" style="background:#4caf50"></span>Flying today (${fleet.filter(h=>h.status==='flying').length})</div>
+      <div><span class="dot" style="background:#ff9800"></span>Maintenance (${fleet.filter(h=>h.status==='maint').length})</div>
+      <div style="margin-top:8px;font-size:11px;color:#888">HC53, HC56 — not in P135 FSR</div>
+    </div>
   `;
   return d;
 };
