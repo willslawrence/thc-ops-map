@@ -98,17 +98,18 @@ for dir in "$PILOTS_DIR"/*/; do
   # Use full name for display
   fullname="$name"
 
-  # REMS — expiry date is stored directly
+  # REMS — date stored is when they LAST FLEW (issue date). Expires +6 months.
   if [ -n "$rems" ] && [ "$rems" != "NA" ] && [ "$rems" != "N/A" ]; then
     rems_ym="${rems:0:7}"
-    # Figure out last flew month (REMS is 6 month cycle, so last flew = rems - 6 months)
-    last_flew=$(date -jf "%Y-%m-%d" -v-6m "${rems_ym}-01" "+%B" 2>/dev/null || echo "")
-    if [[ "$rems_ym" < "$THIS_YM" ]]; then
-      rems_overdue_list="${rems_overdue_list}${fullname} (${base_month:-})|"
-    elif [[ "$rems_ym" == "$THIS_YM" ]]; then
-      rems_this_list="${rems_this_list}${fullname} — last flew ${last_flew:-?}|"
-    elif [[ "$rems_ym" == "$NEXT_YM" ]]; then
-      rems_next_list="${rems_next_list}${fullname} — last flew ${last_flew:-?}|"
+    # Calculate expiry: last flew + 6 months
+    expiry_ym=$(date -jf "%Y-%m-%d" -v+6m "${rems_ym}-01" "+%Y-%m" 2>/dev/null || echo "")
+    last_flew_fmt=$(date -jf "%Y-%m-%d" "${rems_ym}-01" "+%B %Y" 2>/dev/null || echo "$rems_ym")
+    if [[ "$expiry_ym" < "$THIS_YM" ]]; then
+      rems_overdue_list="${rems_overdue_list}${fullname} — last flew ${last_flew_fmt}|"
+    elif [[ "$expiry_ym" == "$THIS_YM" ]]; then
+      rems_this_list="${rems_this_list}${fullname} — last flew ${last_flew_fmt}|"
+    elif [[ "$expiry_ym" == "$NEXT_YM" ]]; then
+      rems_next_list="${rems_next_list}${fullname} — last flew ${last_flew_fmt}|"
     fi
   fi
 
@@ -175,7 +176,7 @@ fi
 
 # REMS overdue
 if [ -n "$rems_overdue_list" ]; then
-  names=$(echo "${rems_overdue_list%|}" | tr '|' ' · ')
+  names=$(echo "${rems_overdue_list%|}" | sed 's/|/ · /g')
   currency+="  <div class=\"alert danger\">🔴 Overdue: ${names}</div>\n"
 fi
 
