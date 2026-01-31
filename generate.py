@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""generate_sandbox.py - Regenerates THC Fleet Map from Obsidian vault."""
 import os, re, glob
 from datetime import datetime, timedelta
 
@@ -11,188 +10,190 @@ MISSIONS_DIR = f"{VAULT}/Missions"
 HTML_FILE = os.path.join(os.path.dirname(__file__), "index.html")
 TODAY = datetime.now()
 
-def parse_frontmatter(filepath):
-    data = {}
+def parse_fm(fp):
+    d = {}
     try:
-        with open(filepath, 'r') as f:
-            txt = f.read()
-        if txt.startswith('---'):
-            parts = txt.split('---', 2)
-            if len(parts) >= 3:
-                key = None
-                lst = []
-                for ln in parts[1].strip().split('\n'):
+        t = open(fp).read()
+        if t.startswith('---'):
+            p = t.split('---', 2)
+            if len(p) >= 3:
+                k, lst = None, []
+                for ln in p[1].strip().split('\n'):
                     if ln.strip().startswith('- '):
-                        if key: lst.append(ln.strip()[2:].strip())
+                        if k: lst.append(ln.strip()[2:].strip())
                     elif ':' in ln:
-                        if key and lst:
-                            data[key] = lst[0] if len(lst)==1 else ', '.join(lst)
-                            lst = []
-                        k, v = ln.split(':', 1)
-                        key = k.strip()
-                        v = v.strip().strip('"').strip("'")
-                        if v: data[key] = v; key = None
-                if key and lst:
-                    data[key] = lst[0] if len(lst)==1 else ', '.join(lst)
+                        if k and lst: d[k] = lst[0] if len(lst)==1 else ', '.join(lst); lst = []
+                        kk, v = ln.split(':', 1)
+                        k = kk.strip(); v = v.strip().strip('"').strip("'")
+                        if v: d[k] = v; k = None
+                if k and lst: d[k] = lst[0] if len(lst)==1 else ', '.join(lst)
     except: pass
-    return data
+    return d
 
-def load_helicopters():
-    helis = []
+def load_helis():
+    h = []
     for f in sorted(glob.glob(f"{HELIS_DIR}/HZHC*.md")):
-        d = parse_frontmatter(f)
+        d = parse_fm(f)
         st = d.get('status', 'parked').lower()
         if 'serviceable' in st: st = 'parked'
         elif 'maint' in st or 'aog' in st: st = 'maint'
         else: st = 'parked'
-        helis.append({'reg': d.get('registration', os.path.basename(f).replace('.md','')), 'loc': d.get('location','UNK'), 'status': st, 'mission': d.get('current_mission',''), 'note': d.get('note','')})
-    print(f"✅ Loaded {len(helis)} helicopters")
-    return helis
+        h.append({'reg': d.get('registration', os.path.basename(f).replace('.md','')), 'loc': d.get('location','UNK'), 'status': st, 'mission': d.get('current_mission',''), 'note': d.get('note','')})
+    print(f"✅ Loaded {len(h)} helicopters")
+    return h
 
 def load_flights():
-    flights, flying = [], {}
+    fl, fy = [], {}
     try:
-        txt = open(FLIGHTS_FILE).read()
-        today_str = TODAY.strftime("%Y-%m-%d")
-        for ln in txt.split('\n'):
-            if ln.startswith(today_str) and '|' in ln:
+        t = open(FLIGHTS_FILE).read()
+        ts = TODAY.strftime("%Y-%m-%d")
+        for ln in t.split('\n'):
+            if ln.startswith(ts) and '|' in ln:
                 p = [x.strip() for x in ln.split('|')]
                 if len(p) >= 4:
-                    reg = 'HZHC' + p[1].replace('HC','') if not p[1].startswith('HZ') else p[1]
-                    flights.append({'reg': reg, 'mission': p[2], 'pilot': p[3]})
-                    flying[reg] = p[3]
+                    r = 'HZHC' + p[1].replace('HC','') if not p[1].startswith('HZ') else p[1]
+                    fl.append({'reg': r, 'mission': p[2], 'pilot': p[3]})
+                    fy[r] = p[3]
     except: pass
-    print(f"✅ Loaded {len(flights)} flights for today")
-    return flights, flying
+    print(f"✅ Loaded {len(fl)} flights")
+    return fl, fy
 
 def load_currency():
-    curr = []
+    c = []
     for pd in glob.glob(f"{PILOTS_DIR}/*/"):
         nm = os.path.basename(pd.rstrip('/'))
         pf = os.path.join(pd, f"{nm}.md")
         if os.path.exists(pf):
             try:
-                txt = open(pf).read()
-                med = rems = base = ""
-                for ln in txt.split('\n'):
+                t = open(pf).read()
+                med = rems = comp = ""
+                for ln in t.split('\n'):
                     if 'Medical Certificate Date:' in ln: med = ln.split(':',1)[1].strip()
                     if '30 Mins REMS:' in ln: rems = ln.split(':',1)[1].strip()
-                    if 'Base Month:' in ln: base = ln.split(':',1)[1].strip()
-                if med or rems or base:
-                    curr.append({'name': nm, 'medical': med, 'rems': rems, 'base_month': base})
+                    if 'Last Competency Check:' in ln: comp = ln.split(':',1)[1].strip()
+                c.append({'name': nm, 'medical': med, 'rems': rems, 'competency': comp})
             except: pass
-    print(f"✅ Loaded {len(curr)} pilot currency records")
-    return curr
+    print(f"✅ Loaded {len(c)} currency records")
+    return c
 
 def load_missions():
-    missions = []
+    m = []
     for pat in [f"{MISSIONS_DIR}/*.md", f"{MISSIONS_DIR}/Past Missions/*.md"]:
         for f in glob.glob(pat):
-            d = parse_frontmatter(f)
+            d = parse_fm(f)
             t = d.get('title', os.path.basename(f).replace('.md',''))
-            missions.append({'title': t, 'date': d.get('date',''), 'endDate': d.get('endDate', d.get('date','')), 'status': d.get('status','pending'), 'helicopters': d.get('Helicopter',''), 'pilots': d.get('Pilots','')})
-    missions.sort(key=lambda x: x['date'] if x['date'] else 'zzzz')
-    print(f"✅ Loaded {len(missions)} missions")
-    return missions
+            m.append({'title': t, 'date': d.get('date',''), 'endDate': d.get('endDate', d.get('date','')), 'status': d.get('status','pending'), 'helicopters': d.get('Helicopter',''), 'pilots': d.get('Pilots','')})
+    m.sort(key=lambda x: x['date'] if x['date'] else 'zzzz')
+    print(f"✅ Loaded {len(m)} missions")
+    return m
 
-def build_fleet_js(helis, flying):
-    lines = ["const fleet = ["]
+def build_fleet_js(helis, fy):
+    L = ["const fleet = ["]
     cnt = {'parked':0, 'flying':0, 'maint':0}
     for h in helis:
-        st = 'flying' if h['reg'] in flying else h['status']
+        st = 'flying' if h['reg'] in fy else h['status']
         cnt[st] = cnt.get(st,0) + 1
         e = f'  {{ reg: "{h["reg"]}", loc: "{h["loc"]}", status: "{st}"'
         if h['note']: e += f', note: "{h["note"]}"'
         if h['mission']: e += f', mission: "{h["mission"]}"'
-        if h['reg'] in flying: e += f', pilot: "{flying[h["reg"]]}"'
-        lines.append(e + ' },')
-    lines.append("];")
-    print(f"✅ Fleet: {cnt['parked']} serviceable, {cnt['flying']} flying, {cnt['maint']} maintenance")
-    return '\n'.join(lines)
+        if h['reg'] in fy: e += f', pilot: "{fy[h["reg"]]}"'
+        L.append(e + ' },')
+    L.append("];")
+    print(f"✅ Fleet: {cnt['parked']} serviceable, {cnt['flying']} flying, {cnt['maint']} maint")
+    return '\n'.join(L)
 
 def build_flights_html():
-    lines = []
+    L = []
     try:
-        txt = open(FLIGHTS_FILE).read()
-        today_str = TODAY.strftime("%Y-%m-%d")
-        for ln in txt.split('\n'):
-            if ln.startswith('## '): lines.append(f'  <h4>{ln[3:].strip()}</h4>')
+        t = open(FLIGHTS_FILE).read()
+        ts = TODAY.strftime("%Y-%m-%d")
+        for ln in t.split('\n'):
+            if ln.startswith('## '): L.append(f'  <h4>{ln[3:].strip()}</h4>')
             elif '|' in ln and 'HC' in ln and not ln.startswith('#'):
                 p = [x.strip() for x in ln.split('|')]
                 if len(p) >= 4:
-                    reg = p[1].replace('HZHC','HC') if 'HZ' in p[1] else p[1]
-                    cls = "flight-row today" if p[0]==today_str else "flight-row"
-                    lines.append(f'  <div class="{cls}"><span class="reg">{reg}</span><span class="info">{p[2]}</span><span class="pilot">{p[3]}</span></div>')
+                    r = p[1].replace('HZHC','HC') if 'HZ' in p[1] else p[1]
+                    cl = "flight-row today" if p[0]==ts else "flight-row"
+                    L.append(f'  <div class="{cl}"><span class="reg">{r}</span><span class="info">{p[2]}</span><span class="pilot">{p[3]}</span></div>')
     except: pass
-    return '\n'.join(lines) if lines else '  <div>No flights</div>'
+    return '\n'.join(L) if L else '  <div>No flights</div>'
 
 def build_currency_html(curr):
     L = []
-    this_mo = TODAY.strftime("%B")
-    next_mo = (TODAY.replace(day=1) + timedelta(days=32)).strftime("%B")
-    due_this = [c['name'] for c in curr if c.get('base_month')==this_mo]
-    due_next = [c['name'] for c in curr if c.get('base_month')==next_mo]
-    L.append('  <h4>Competency Checks</h4>')
-    for n in due_this: L.append(f'  <div class="alert warn">⚠️ {this_mo} — {n}</div>')
-    if due_next: L.append(f'  <div class="alert ok">✅ {next_mo} — {", ".join(due_next)}</div>')
-    elif not due_this: L.append(f'  <div class="alert ok">✅ {next_mo} — nobody due</div>')
+    next_mo = (TODAY.replace(day=1) + timedelta(days=32)).replace(day=1)
+    next_mo_end = (next_mo + timedelta(days=32)).replace(day=1)
     
-    rems = []
+    # Competency - 12 months from last check, show due next month
+    comp_due = []
+    for c in curr:
+        cp = c.get('competency','')
+        if cp:
+            try:
+                cd = datetime.strptime(cp, "%Y-%m-%d")
+                exp = cd.replace(year=cd.year+1)
+                if next_mo <= exp < next_mo_end:
+                    comp_due.append((c['name'], exp.strftime("%d %b")))
+            except: pass
+    L.append('  <h4>Competency Checks</h4>')
+    if comp_due:
+        for n, d in comp_due:
+            L.append(f'  <div class="alert warn">⚠️ {next_mo.strftime("%B")} — {n} (due {d})</div>')
+    else:
+        L.append(f'  <div class="alert ok">✅ {next_mo.strftime("%B")} — nobody due</div>')
+    
+    # REMS - 6 months, only if they have a date
+    rems_issues = []
     for c in curr:
         r = c.get('rems','')
         if r:
             try:
                 rd = datetime.strptime(r, "%Y-%m")
                 mo = (TODAY.year-rd.year)*12 + (TODAY.month-rd.month)
-                if mo > 6: rems.append((c['name'], rd.strftime("%B %Y"), 'danger'))
-                elif mo >= 5: rems.append((c['name'], rd.strftime("%B %Y"), 'warn'))
+                if mo > 6: rems_issues.append((c['name'], rd.strftime("%B %Y"), 'danger'))
+                elif mo >= 5: rems_issues.append((c['name'], rd.strftime("%B %Y"), 'warn'))
             except: pass
-    if rems:
+    if rems_issues:
         L.append('  <h4>30-Min REMS (6 month cycle)</h4>')
-        for n,d,l in sorted(rems, key=lambda x: x[2]!='danger'):
-            L.append(f'  <div class="alert {l}">{"🔴" if l=="danger" else "⚠️"} {n} — expired {d}</div>')
+        for n,d,lv in sorted(rems_issues, key=lambda x: x[2]!='danger'):
+            L.append(f'  <div class="alert {lv}">{"🔴" if lv=="danger" else "⚠️"} {n} — expired {d}</div>')
     
-    meds = []
+    # Medical - 12 months from check date
+    med_issues = []
     for c in curr:
         m = c.get('medical','')
         if m:
             try:
                 md = datetime.strptime(m, "%Y-%m-%d")
-                days = (md - TODAY).days
-                if days < 0: meds.append((c['name'], md.strftime("%B"), 'danger'))
-                elif days < 60: meds.append((c['name'], md.strftime("%B"), 'warn'))
+                exp = md.replace(year=md.year+1)
+                days = (exp - TODAY).days
+                if days < 0: med_issues.append((c['name'], exp.strftime("%B %Y"), 'danger'))
+                elif days < 60: med_issues.append((c['name'], exp.strftime("%B"), 'warn'))
             except: pass
-    if meds:
+    if med_issues:
         L.append('  <h4>Medical Certificate (12 month validity)</h4>')
-        for n,d,l in sorted(meds, key=lambda x: x[2]!='danger'):
-            L.append(f'  <div class="alert {l}">{"🔴" if l=="danger" else "⚠️"} {n} — {d}</div>')
+        for n,d,lv in sorted(med_issues, key=lambda x: x[2]!='danger'):
+            L.append(f'  <div class="alert {lv}">{"🔴" if lv=="danger" else "⚠️"} {n} — {d}</div>')
+    
     return '\n'.join(L)
 
-def build_timeline_html(missions):
+def build_timeline(missions):
     tbd = [m for m in missions if not m['date']]
     dated = [m for m in missions if m['date']]
     if not dated: return "<!-- No missions -->"
     def pdt(d):
         try: return datetime.strptime(d, "%Y-%m-%d")
         except: return None
-    for m in dated:
-        m['s'] = pdt(m['date'])
-        m['e'] = pdt(m['endDate']) or m['s']
+    for m in dated: m['s'], m['e'] = pdt(m['date']), pdt(m['endDate']) or pdt(m['date'])
     dated = [m for m in dated if m['s']]
     dated.sort(key=lambda x: x['s'])
-    mn, mx = datetime(2025,10,1), datetime(2026,12,31)
+    mn, mx, td = datetime(2025,10,1), datetime(2026,12,31), 0
     td = (mx-mn).days
-    def pos(s,e):
-        l = ((max(s,mn)-mn).days/td)*100
-        w = max(((min(e,mx)-max(s,mn)).days/td)*100, 1.2)
-        return round(l,1), round(w,1)
+    def pos(s,e): return round(((max(s,mn)-mn).days/td)*100,1), max(round(((min(e,mx)-max(s,mn)).days/td)*100,1), 1.2)
     def fdt(s,e):
         if s==e: return s.strftime("%-d %b")
         elif s.month==e.month: return f"{s.day}-{e.strftime('%-d %b')}"
         return f"{s.strftime('%-d %b')} - {e.strftime('%-d %b')}"
-    def ovl(a,b):
-        buf = timedelta(days=2)
-        return not (a['e']+buf < b['s'] or b['e']+buf < a['s'])
+    def ovl(a,b): return not (a['e']+timedelta(days=2) < b['s'] or b['e']+timedelta(days=2) < a['s'])
     def pack(evs):
         lanes = []
         for ev in evs:
@@ -207,11 +208,7 @@ def build_timeline_html(missions):
     if tbd:
         L.append('    <div class="tbd-sidebar">')
         L.append('      <div class="tbd-header">📋 Dates TBD</div>')
-        for m in tbd:
-            t = m['title']
-            L.append(f'      <div class="tbd-item" data-name="{t}" data-status="pending" data-dates="TBD" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)">')
-            L.append(f'        {t}')
-            L.append('      </div>')
+        for m in tbd: L.append(f'      <div class="tbd-item" data-name="{m["title"]}" data-status="pending" data-dates="TBD" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)">\n        {m["title"]}\n      </div>')
         L.append('    </div>')
     def bar(m):
         l,w = pos(m['s'],m['e'])
@@ -219,11 +216,7 @@ def build_timeline_html(missions):
         sh = "short" if w<8 else ""
         dp = (t[:10]+"...") if len(t)>12 and sh else t
         h,p = m.get('helicopters') or 'TBD', m.get('pilots') or 'TBD'
-        b = [f'          <div class="event-bar {st} {sh}" style="left:{l}%;width:{w}%;" data-name="{t}" data-status="{st}" data-dates="{dt}" data-aircraft="{h}" data-pilots="{p}" onclick="showEventPopup(this,event)" title="{t} ({dt})">']
-        b.append(f'            <span class="event-title">{dp}</span>')
-        if not sh: b.append(f'            <span class="event-dates">{dt}</span>')
-        b.append('          </div>')
-        return '\n'.join(b)
+        return f'          <div class="event-bar {st} {sh}" style="left:{l}%;width:{w}%;" data-name="{t}" data-status="{st}" data-dates="{dt}" data-aircraft="{h}" data-pilots="{p}" onclick="showEventPopup(this,event)" title="{t} ({dt})">\n            <span class="event-title">{dp}</span>' + (f'\n            <span class="event-dates">{dt}</span>' if not sh else '') + '\n          </div>'
     L.append('    <div class="timeline-body">')
     L.append('      <div class="lanes-above">')
     for lane in above:
@@ -235,11 +228,9 @@ def build_timeline_html(missions):
     L.append('        <div class="axis-line"></div>')
     c = mn
     while c <= mx:
-        l = round(((c-mn).days/td)*100,1)
-        L.append(f'        <div class="month-marker" style="left:{l}%;">{c.strftime("%b %Y")}</div>')
+        L.append(f'        <div class="month-marker" style="left:{round(((c-mn).days/td)*100,1)}%;">{c.strftime("%b %Y")}</div>')
         c = (c.replace(day=1)+timedelta(days=32)).replace(day=1)
-    if mn <= TODAY <= mx:
-        L.append(f'      <div class="today-marker" style="left:{round(((TODAY-mn).days/td)*100,1)}%;"><span>Today</span></div>')
+    if mn <= TODAY <= mx: L.append(f'      <div class="today-marker" style="left:{round(((TODAY-mn).days/td)*100,1)}%;"><span>Today</span></div>')
     L.append('      </div>')
     L.append('      <div class="lanes-below">')
     for lane in below:
@@ -251,7 +242,7 @@ def build_timeline_html(missions):
     L.append('    </div>')
     return '\n'.join(L)
 
-def update_html(html, fleet, flights, curr, timeline):
+def update(html, fleet, flights, curr, timeline):
     html = re.sub(r'const fleet = \[.*?\];', fleet, html, flags=re.DOTALL)
     html = re.sub(r'<!-- FLIGHTS_START -->.*?<!-- FLIGHTS_END -->', f'<!-- FLIGHTS_START -->\n{flights}\n  <!-- FLIGHTS_END -->', html, flags=re.DOTALL)
     html = re.sub(r'<!-- CURRENCY_START -->.*?<!-- CURRENCY_END -->', f'<!-- CURRENCY_START -->\n{curr}\n  <!-- CURRENCY_END -->', html, flags=re.DOTALL)
@@ -262,18 +253,13 @@ def update_html(html, fleet, flights, curr, timeline):
 
 def main():
     print(f"\n🚁 THC Fleet Map Generator\n   {TODAY.strftime('%Y-%m-%d %H:%M:%S')}\n")
-    helis = load_helicopters()
-    flights, flying = load_flights()
-    curr = load_currency()
-    missions = load_missions()
-    fjs = build_fleet_js(helis, flying)
-    fhtml = build_flights_html()
-    chtml = build_currency_html(curr)
-    thtml = build_timeline_html(missions)
+    h = load_helis()
+    fl, fy = load_flights()
+    c = load_currency()
+    m = load_missions()
     html = open(HTML_FILE).read()
-    html = update_html(html, fjs, fhtml, chtml, thtml)
+    html = update(html, build_fleet_js(h, fy), build_flights_html(), build_currency_html(c), build_timeline(m))
     open(HTML_FILE, 'w').write(html)
-    print(f"\n✅ Updated {HTML_FILE}")
-    print(f"Done!")
+    print(f"\n✅ Done!")
 
 if __name__ == "__main__": main()
