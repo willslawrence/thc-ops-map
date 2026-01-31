@@ -220,7 +220,7 @@ def get_missions():
     """Get mission data for timeline."""
     missions = []
     
-    for f in glob.glob(f"{MISSIONS_DIR}/*.md"):
+    for f in glob.glob(f"{MISSIONS_DIR}/**/*.md", recursive=True):
         data = parse_frontmatter(f)
         if data.get('title') and data.get('date'):
             mission = {
