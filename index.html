@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>THC Fleet Map — 30 Jan 2026</title>
+<title>THC Fleet Map — 31 Jan 2026</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -329,7 +329,7 @@
 </head>
 <body>
 <div id="map"></div>
-<div id="last-updated">Last updated: <!-- LAST_UPDATED -->30 Jan 2026 23:52<!-- /LAST_UPDATED --></div>
+<div id="last-updated">Last updated: <!-- LAST_UPDATED -->31 Jan 2026 08:25<!-- /LAST_UPDATED --></div>
 
 <!-- Timeline Toggle Button -->
 <button class="timeline-toggle" onclick="toggleTimeline()">📅 Missions</button>
@@ -405,106 +405,20 @@
       </div>
     </div>
     <!-- TIMELINE_START -->
-    <div class="timeline-body">
-      <div class="lanes-above">
-        <!-- Lane 1: Skybridge -->
-        <div class="lane">
-          <div class="event-bar pending" style="left: 16.4%; width: 83.6%;"
-               data-name="Skybridge" data-dates="Mar 1 – Dec 31" data-aircraft="TBA" data-pilots="TBA" data-status="pending">
-            <span class="event-icon">🌉</span>
-            <span class="event-title">Skybridge</span>
-            <span class="event-dates">Mar 1 – Dec 31</span>
-            <div class="connector" style="left: 5%;"></div>
-          </div>
-        </div>
-        <!-- Lane 2: AlUla Tour -->
-        <div class="lane">
-          <div class="event-bar current" style="left: 6.85%; width: 2%;"
-               data-name="AlUla Tour 2026" data-dates="Jan 25 – Feb 1" data-aircraft="HC55" data-pilots="Bonet" data-status="current">
-            <span class="event-icon">🎬</span>
-            <span class="event-title">AlUla Tour</span>
-            <span class="event-dates">Jan 25</span>
-            <div class="connector" style="left: 50%;"></div>
-          </div>
-        </div>
-        <!-- Lane 3: Al Fursan Cup -->
-        <div class="lane">
-          <div class="event-bar future" style="left: 10.14%; width: 4%;"
-               data-name="Al Fursan Cup" data-dates="Feb 6 – 7" data-aircraft="HC55" data-pilots="Lisa" data-status="future">
-            <span class="event-icon">🏆</span>
-            <span class="event-title">Al Fursan Cup</span>
-            <span class="event-dates">Feb 6 – 7</span>
-            <div class="connector" style="left: 30%;"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="timeline-axis">
-        <div class="axis-line"></div>
-        <div class="month-tick" style="left: 0%;"><span class="tick-label">Jan</span></div>
-        <div class="month-tick" style="left: 8.49%;"><span class="tick-label">Feb</span></div>
-        <div class="month-tick" style="left: 16.16%;"><span class="tick-label">Mar</span></div>
-        <div class="month-tick" style="left: 24.66%;"><span class="tick-label">Apr</span></div>
-        <div class="month-tick" style="left: 32.88%;"><span class="tick-label">May</span></div>
-        <div class="month-tick" style="left: 41.37%;"><span class="tick-label">Jun</span></div>
-        <div class="month-tick" style="left: 49.59%;"><span class="tick-label">Jul</span></div>
-        <div class="month-tick" style="left: 58.08%;"><span class="tick-label">Aug</span></div>
-        <div class="month-tick" style="left: 66.58%;"><span class="tick-label">Sep</span></div>
-        <div class="month-tick" style="left: 74.79%;"><span class="tick-label">Oct</span></div>
-        <div class="month-tick" style="left: 83.29%;"><span class="tick-label">Nov</span></div>
-        <div class="month-tick" style="left: 91.51%;"><span class="tick-label">Dec</span></div>
-        <div class="today-marker" style="left: 8.49%;">
-          <span class="today-label">Today</span>
-        </div>
-      </div>
-
-      <div class="lanes-below">
-        <!-- Lane 1: Riyadh UAM -->
-        <div class="lane">
-          <div class="event-bar future" style="left: 10.41%; width: 89.59%;"
-               data-name="Riyadh UAM" data-dates="Feb 8 – Dec 31" data-aircraft="HC66, HC67" data-pilots="Rohit, Will, Lisa, David L, David S" data-status="future">
-            <span class="event-icon">🚁</span>
-            <span class="event-title">Riyadh UAM</span>
-            <span class="event-dates">Feb 8 – Dec 31</span>
-            <div class="connector" style="left: 3%;"></div>
-          </div>
-        </div>
-        <!-- Lane 2: Rally Hail -->
-        <div class="lane">
-          <div class="event-bar current" style="left: 7.95%; width: 4%;"
-               data-name="Rally Hail 2026" data-dates="Jan 29 – Feb 1" data-aircraft="HC54, HC58, HC62, HC63" data-pilots="David, Stephan, Will, David L" data-status="current">
-            <span class="event-icon">🏁</span>
-            <span class="event-title">Rally Hail</span>
-            <span class="event-dates">Jan 29</span>
-            <div class="connector" style="left: 20%;"></div>
-          </div>
-        </div>
-        <!-- Lane 3: Other rallies -->
-        <div class="lane">
-          <div class="event-bar pending" style="left: 25.48%; width: 4%;"
-               data-name="Al Jouf Rally" data-dates="Apr 3 – 4" data-aircraft="TBA" data-pilots="TBA" data-status="pending">
-            <span class="event-icon">🏁</span>
-            <span class="event-title">Al Jouf Rally</span>
-            <span class="event-dates">Apr 3 – 4</span>
-            <div class="connector" style="left: 15%;"></div>
-          </div>
-          <div class="event-bar pending" style="left: 35.07%; width: 4%;"
-               data-name="Rally Qassim 2026" data-dates="May 8 – 9" data-aircraft="TBA" data-pilots="TBA" data-status="pending">
-            <span class="event-icon">🏁</span>
-            <span class="event-title">Qassim Rally</span>
-            <span class="event-dates">May 8 – 9</span>
-            <div class="connector" style="left: 30%;"></div>
-          </div>
-          <div class="event-bar pending" style="left: 92.60%; width: 4%;"
-               data-name="Jeddah Rally 2026" data-dates="Dec 4 – 5" data-aircraft="TBA" data-pilots="TBA" data-status="pending">
-            <span class="event-icon">🏁</span>
-            <span class="event-title">Jeddah Rally</span>
-            <span class="event-dates">Dec 4 – 5</span>
-            <div class="connector" style="left: 30%;"></div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div class="timeline-item past" data-start="2025-10-27" data-end="2025-10-30"><span class="timeline-title">GHE 2025</span></div>
+    <div class="timeline-item past" data-start="2025-10-30" data-end="2025-11-03"><span class="timeline-title">Rally Qassim 2025</span></div>
+    <div class="timeline-item past" data-start="2025-11-01" data-end="2025-11-20"><span class="timeline-title">Trojena Gear Removal 2025</span></div>
+    <div class="timeline-item past" data-start="2025-11-25" data-end="2025-12-01"><span class="timeline-title">Rally WRC 2025</span></div>
+    <div class="timeline-item past" data-start="2025-12-04" data-end="2025-12-08"><span class="timeline-title">Rally Jeddah 2025</span></div>
+    <div class="timeline-item past" data-start="2025-12-27" data-end="2026-01-18"><span class="timeline-title">Rally Dakar 2026</span></div>
+    <div class="timeline-item current" data-start="2026-01-25" data-end="2026-02-01"><span class="timeline-title">AlUla Tour 2026</span></div>
+    <div class="timeline-item current" data-start="2026-01-29" data-end="2026-02-01"><span class="timeline-title">Rally Hail 2026</span></div>
+    <div class="timeline-item future" data-start="2026-02-06" data-end="2026-02-07"><span class="timeline-title">Al Fursan Cup</span></div>
+    <div class="timeline-item future" data-start="2026-02-08" data-end="2026-12-31"><span class="timeline-title">Riyadh UAM</span></div>
+    <div class="timeline-item pending" data-start="2026-03-01" data-end="2026-12-31"><span class="timeline-title">Skybridge</span></div>
+    <div class="timeline-item pending" data-start="2026-04-03" data-end="2026-04-04"><span class="timeline-title">Al Jouf Rally</span></div>
+    <div class="timeline-item pending" data-start="2026-05-08" data-end="2026-05-09"><span class="timeline-title">Rally Qassim 2026</span></div>
+    <div class="timeline-item pending" data-start="2026-12-04" data-end="2026-12-05"><span class="timeline-title">Jeddah Rally 2026</span></div>
     <!-- TIMELINE_END -->
 
   </div>
@@ -627,7 +541,7 @@ legend.onAdd = () => {
   d.onclick = () => d.classList.toggle('collapsed');
   d.innerHTML = `
     <!-- LEGEND_START -->
-    <h4>🚁 H125 Fleet — <!-- LEGEND_DATE -->30 Jan 2026<!-- /LEGEND_DATE --> ▾</h4>
+    <h4>🚁 H125 Fleet — <!-- LEGEND_DATE -->31 Jan 2026<!-- /LEGEND_DATE --> ▾</h4>
     <div class="legend-body">
       <div><span class="dot" style="background:#7eb8ff"></span>Serviceable (${fleet.filter(h=>h.status==='parked').length})</div>
       <div><span class="dot" style="background:#4caf50"></span>Flying today (${fleet.filter(h=>h.status==='flying').length})</div>
