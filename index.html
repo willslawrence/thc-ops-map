@@ -11,7 +11,7 @@
   * { box-sizing: border-box; }
   body { margin: 0; font-family: 'Inter', -apple-system, sans-serif; }
   #map { width: 100vw; height: 100vh; transition: height 0.3s ease; }
-  body.timeline-open #map { height: 60vh; }
+  body.timeline-open #map { height: 70vh; }
   
   .heli-pin {
     background: rgba(0,0,0,0.85); color: #7eb8ff; padding: 1px 4px;
@@ -48,7 +48,7 @@
     display: flex; flex-direction: column; gap: 8px;
     scrollbar-width: thin; scrollbar-color: #333 transparent;
   }
-  body.timeline-open .left-panels { max-height: 58vh; }
+  body.timeline-open .left-panels { max-height: 68vh; }
   .left-panels > div {
     background: rgba(15,15,30,0.75); backdrop-filter: blur(12px); color: #ddd;
     border-radius: 10px; border: 1px solid rgba(255,255,255,0.15);
@@ -98,7 +98,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    height: 40vh;
+    height: 30vh;
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
     border-top: 2px solid rgba(46, 204, 113, 0.5);
     transform: translateY(100%);
