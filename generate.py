@@ -16,7 +16,7 @@ HELIS_DIR = f"{VAULT}/Helicopters"
 PILOTS_DIR = f"{VAULT}/Pilots"
 FLIGHTS_FILE = f"{VAULT}/Flights Schedule.md"
 MISSIONS_DIR = f"{VAULT}/Missions"
-TEMPLATE_FILE = os.path.join(os.path.dirname(__file__), "Fleet-Map-Draft.html")
+# Template is index.html itself
 HTML_FILE = os.path.join(os.path.dirname(__file__), "index.html")
 
 TODAY = datetime.now()
@@ -340,17 +340,141 @@ def build_currency_html(currency):
     return '\n'.join(lines)
 
 def build_timeline_html(missions):
-    """Build the missions timeline HTML."""
-    lines = []
+    """Build the fancy missions timeline HTML with lanes and event bars."""
+    from datetime import datetime, timedelta
     
-    for m in missions:
-        status_class = m['status']  # current, future, pending
-        lines.append(f'    <div class="timeline-item {status_class}" '
-                    f'data-start="{m["date"]}" data-end="{m["endDate"]}">'
-                    f'<span class="timeline-title">{m["title"]}</span>'
-                    f'</div>')
+    # Separate TBD missions from dated missions
+    tbd_missions = [m for m in missions if not m.get('date')]
+    dated_missions = [m for m in missions if m.get('date')]
     
-    return '\n'.join(lines)
+    if not dated_missions:
+        return "<!-- No dated missions -->"
+    
+    # Parse dates and find range
+    def parse_date(d):
+        try:
+            return datetime.strptime(str(d), "%Y-%m-%d")
+        except:
+            return None
+    
+    for m in dated_missions:
+        m['start_dt'] = parse_date(m['date'])
+        m['end_dt'] = parse_date(m['endDate']) or m['start_dt']
+    
+    dated_missions = [m for m in dated_missions if m['start_dt']]
+    dated_missions.sort(key=lambda x: x['start_dt'])
+    
+    # Timeline range: 1 month before earliest to 1 month after latest
+    min_date = min(m['start_dt'] for m in dated_missions) - timedelta(days=30)
+    max_date = max(m['end_dt'] for m in dated_missions) + timedelta(days=30)
+    total_days = (max_date - min_date).days
+    
+    def calc_position(start, end):
+        left = ((start - min_date).days / total_days) * 100
+        width = max(((end - start).days / total_days) * 100, 1.2)
+        return left, width
+    
+    def format_dates(start, end):
+        if start == end:
+            return start.strftime("%-d %b")
+        elif start.month == end.month and start.year == end.year:
+            return f"{start.strftime('%-d')}-{end.strftime('%-d %b')}"
+        else:
+            return f"{start.strftime('%-d %b')} - {end.strftime('%-d %b')}"
+    
+    # Assign lanes (alternate above/below)
+    lanes_above = []
+    lanes_below = []
+    for i, m in enumerate(dated_missions):
+        if i % 2 == 0:
+            lanes_above.append(m)
+        else:
+            lanes_below.append(m)
+    
+    # Build TBD sidebar
+    tbd_html = ""
+    if tbd_missions:
+        tbd_items = ""
+        for m in tbd_missions:
+            title = m['title'] if isinstance(m['title'], str) else (m['title'][0] if m['title'] else 'Unknown')
+            tbd_items += f'''      <div class="tbd-item" data-name="{title}" data-status="pending" 
+           data-dates="TBD" data-aircraft="TBD" 
+           data-pilots="TBD" onclick="showEventPopup(this, event)">
+        {title}
+      </div>
+'''
+        tbd_html = f'''    <div class="tbd-sidebar">
+      <div class="tbd-header">📋 Dates TBD</div>
+{tbd_items}    </div>'''
+    
+    # Build event bars
+    def build_bar(m):
+        left, width = calc_position(m['start_dt'], m['end_dt'])
+        status = m['status']
+        title = m['title'] if isinstance(m['title'], str) else (m['title'][0] if m['title'] else 'Unknown')
+        dates_str = format_dates(m['start_dt'], m['end_dt'])
+        short = "short" if width < 5 else ""
+        display_title = (title[:10] + "…") if len(title) > 10 and short else title
+        helicopter = m.get('helicopters', 'TBD') or 'TBD'
+        pilots = m.get('pilots', 'TBD') or 'TBD'
+        
+        return f'''          <div class="event-bar {status} {short}" style="left: {left:.2f}%; width: {width:.2f}%;"
+               data-name="{title}" data-status="{status}" 
+               data-dates="{dates_str}" data-aircraft="{helicopter}" 
+               data-pilots="{pilots}" onclick="showEventPopup(this, event)"
+               title="{title} ({dates_str})">
+            <span class="event-title">{display_title}</span>
+            <span class="event-dates">{dates_str}</span>
+            <div class="connector"></div>
+          </div>'''
+    
+    above_html = ""
+    for m in lanes_above:
+        above_html += f'''        <div class="lane">
+{build_bar(m)}
+        </div>
+'''
+    
+    below_html = ""
+    for m in lanes_below:
+        below_html += f'''        <div class="lane">
+{build_bar(m)}
+        </div>
+'''
+    
+    # Build month markers
+    months_html = ""
+    current = min_date.replace(day=1)
+    while current <= max_date:
+        left = ((current - min_date).days / total_days) * 100
+        months_html += f'''        <div class="month-marker" style="left: {left:.2f}%;">{current.strftime("%b %Y")}</div>
+'''
+        if current.month == 12:
+            current = current.replace(year=current.year + 1, month=1)
+        else:
+            current = current.replace(month=current.month + 1)
+    
+    # Today marker
+    today = datetime.now()
+    today_marker = ""
+    if min_date <= today <= max_date:
+        today_left = ((today - min_date).days / total_days) * 100
+        today_marker = f'''      <div class="today-marker" style="left: {today_left:.2f}%;"><span>Today</span></div>'''
+    
+    return f'''    <div class="timeline-wrapper">
+{tbd_html}
+    <div class="timeline-body">
+      <div class="lanes-above">
+{above_html}      </div>
+      <div class="timeline-axis">
+        <div class="axis-line"></div>
+{months_html}{today_marker}
+      </div>
+      <div class="lanes-below">
+{below_html}      </div>
+    </div>
+    </div>'''
+
 
 def update_html(html_content, fleet_js, flights_html, currency_html, timeline_html, report_period):
     """Update the HTML file with new content."""
@@ -432,7 +556,7 @@ def main():
     timeline_html = build_timeline_html(missions)
     
     # Read HTML
-    with open(TEMPLATE_FILE, "r") as f:
+    with open(HTML_FILE, "r") as f:
         html_content = f.read()
     
     # Update HTML
