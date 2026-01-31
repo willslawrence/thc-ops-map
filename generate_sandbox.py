@@ -251,8 +251,9 @@ def build_timeline(missions):
         return lanes
     
     lanes = pack_limited(dated, 6)
-    above = lanes[:3]
-    below = lanes[3:]
+    # Alternate lanes: 0,2,4 above and 1,3,5 below for even distribution
+    above = [lanes[i] for i in [0, 2, 4] if lanes[i]]
+    below = [lanes[i] for i in [1, 3, 5] if lanes[i]]
     
     L = ['    <div class="timeline-wrapper">']
     if tbd:
