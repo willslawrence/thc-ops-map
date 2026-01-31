@@ -391,7 +391,7 @@
 </head>
 <body>
 <div id="map"></div>
-<div id="last-updated">Last updated: <!-- LAST_UPDATED -->31 Jan 2026 17:40<!-- /LAST_UPDATED --></div>
+<div id="last-updated">Last updated: <!-- LAST_UPDATED -->31 Jan 2026 21:49<!-- /LAST_UPDATED --></div>
 
 <!-- Timeline Toggle Button -->
 <button class="timeline-toggle" onclick="toggleTimeline()">📅 Missions</button>
@@ -401,7 +401,7 @@
 <div id="briefing-panel" class="collapsed">
   <div class="panel-header" onclick="this.parentElement.classList.toggle('collapsed')">
     <div class="panel-title">📋 Ops Brief ▾</div>
-    <div class="panel-date">OPS PLAN REPORT / <!-- REPORT_PERIOD -->31 Jan – 05 Feb 2026<!-- /REPORT_PERIOD --></div>
+    <div class="panel-date">OPS PLAN REPORT / <!-- REPORT_PERIOD -->30 Jan – 04 Feb 2026<!-- /REPORT_PERIOD --></div>
   </div>
   <div class="panel-body">
 
@@ -411,7 +411,7 @@
   <div class="flight-row today"><span class="reg">HC62</span><span class="info">PAX135 - SMC</span><span class="pilot">Lawrence</span></div>
   <div class="flight-row today"><span class="reg">HC63</span><span class="info">PAX135 - SMC</span><span class="pilot">Leipsig</span></div>
   <div class="flight-row today"><span class="reg">HC58</span><span class="info">Filming -133 - SMC</span><span class="pilot">Mayer</span></div>
-  <div class="flight-row today"><span class="reg">HC55</span><span class="info">Filming -133 - AlUla Tour 2026</span><span class="pilot">Bonet</span></div>
+  <div class="flight-row today"><span class="reg">HC55</span><span class="info">Filming -133 - AlUla Tour 2026</span><span class="pilot">Bonnett</span></div>
   <h4>01 Feb — Repositioning to OETH</h4>
   <div class="flight-row"><span class="reg">HC54</span><span class="info">Operational Reposition - OETH</span><span class="pilot">Schicht</span></div>
   <div class="flight-row"><span class="reg">HC58</span><span class="info">Operational Reposition - OETH</span><span class="pilot">Mayer</span></div>
@@ -432,10 +432,14 @@
   <div class="alert warn">⚠️ January — Matthias Klemp</div>
   <div class="alert ok">✅ February — nobody due</div>
   <h4>30-Min REMS (6 month cycle)</h4>
-  <div class="alert danger">🔴 Matthias Klemp — expired July 2025</div>
-  <div class="alert danger">🔴 Matt O'brien — expired November 2025</div>
+  <div class="alert warn">⚠️ Due now: Gilles Plaisance — last flew August 2025</div>
+  <div class="alert warn">⚠️ Due now: David Schicht — last flew August 2025</div>
+  <div class="alert warn">⚠️ Due now: Nathan Piper — last flew August 2025</div>
+  <div class="alert danger">🔴 Overdue: Matthias Klemp — last flew January 2025</div>
+  <div class="alert danger">🔴 Overdue: Matt O'brien — last flew May 2025</div>
   <h4>Medical Certificate (12 month validity)</h4>
-  <div class="alert warn">⚠️ Nathan Piper — January</div>
+  <div class="alert warn">⚠️ Expires this month: Nathan Piper — issued January 2025</div>
+  <div class="alert warn">⚠️ Expires next month: Lisa le Roux — issued February 2025</div>
   <!-- CURRENCY_END -->
   </div>
 </div>
@@ -455,156 +459,14 @@
       </div>
     </div>
     <!-- TIMELINE_START -->
-    <div class="timeline-wrapper">
-    <div class="tbd-sidebar">
-      <div class="tbd-header">📋 Dates TBD</div>
-      <div class="tbd-item" data-name="Argas" data-status="pending" 
-           data-dates="TBD" data-aircraft="TBD" 
-           data-pilots="TBD" onclick="showEventPopup(this, event)">
-        Argas
-      </div>
-      <div class="tbd-item" data-name="GeoTech" data-status="pending" 
-           data-dates="TBD" data-aircraft="TBD" 
-           data-pilots="TBD" onclick="showEventPopup(this, event)">
-        GeoTech
-      </div>
-    </div>
-    <div class="timeline-body">
-      <div class="lanes-above">
-        <div class="lane">
-          <div class="event-bar past short" style="left: 14.035087719298245%; width: 1.2%;"
-               data-name="Rally Jeddah 2025" data-status="past" 
-               data-dates="4-8 Dec" data-aircraft="HZHC62, HZHC55, HZHC59, HZHC57" 
-               data-pilots="Ivona, Will, Nathan, Lisa" onclick="showEventPopup(this, event)"
-               title="Rally Jeddah 2025 (4-8 Dec)">
-            <span class="event-title">Rally Jedd…</span>
-          </div>
-          <div class="event-bar pending" style="left: 33.114035087719294%; width: 66.88596491228071%;"
-               data-name="Skybridge" data-status="pending" 
-               data-dates="1 Mar - 31 Dec" data-aircraft="TBD" 
-               data-pilots="TBD" onclick="showEventPopup(this, event)">
-            <span class="event-title">Skybridge</span>
-            <span class="event-dates">1 Mar - 31 Dec</span>
-          </div>
-        </div>
-        <div class="lane">
-          <div class="event-bar past" style="left: 6.798245614035088%; width: 4.166666666666665%;"
-               data-name="Trojena Gear Removal 2025" data-status="past" 
-               data-dates="1-20 Nov" data-aircraft="HZHC54" 
-               data-pilots="TBD" onclick="showEventPopup(this, event)">
-            <span class="event-title">Trojena Gear Removal 2025</span>
-            <span class="event-dates">1-20 Nov</span>
-          </div>
-          <div class="event-bar future short" style="left: 28.07017543859649%; width: 1.2%;"
-               data-name="Al Fursan Cup" data-status="future" 
-               data-dates="6-7 Feb" data-aircraft="HZHC55" 
-               data-pilots="Lisa" onclick="showEventPopup(this, event)"
-               title="Al Fursan Cup (6-7 Feb)">
-            <span class="event-title">Al Fursan …</span>
-          </div>
-        </div>
-        <div class="lane">
-          <div class="event-bar past short" style="left: 5.701754385964912%; width: 1.2%;"
-               data-name="GHE 2025" data-status="past" 
-               data-dates="27-30 Oct" data-aircraft="H125, AW139" 
-               data-pilots="TBD" onclick="showEventPopup(this, event)"
-               title="GHE 2025 (27-30 Oct)">
-            <span class="event-title">GHE 2025</span>
-          </div>
-          <div class="event-bar current" style="left: 25.438596491228072%; width: 1.535087719298243%;"
-               data-name="AlUla Tour 2026" data-status="current" 
-               data-dates="25 Jan - 1 Feb" data-aircraft="HZHC55" 
-               data-pilots="Bonet" onclick="showEventPopup(this, event)">
-            <span class="event-title">AlUla Tour 2026</span>
-            <span class="event-dates">25 Jan - 1 Feb</span>
-          </div>
-          <div class="event-bar pending short" style="left: 48.026315789473685%; width: 1.2%;"
-               data-name="Rally Qassim 2026" data-status="pending" 
-               data-dates="8-9 May" data-aircraft="TBD" 
-               data-pilots="TBD" onclick="showEventPopup(this, event)"
-               title="Rally Qassim 2026 (8-9 May)">
-            <span class="event-title">Rally Qass…</span>
-          </div>
-        </div>
-      </div>
-      <div class="timeline-axis">
-        <div class="axis-line"></div>
-        <div class="today-marker" style="left: 26.75438596491228%;"><div class="today-label">TODAY</div></div>
-        <div class="month-tick" style="left: 0%;"><span class="tick-label">Oct 25</span></div>
-        <div class="month-tick" style="left: 6.7%;"><span class="tick-label">Nov</span></div>
-        <div class="month-tick" style="left: 13.3%;"><span class="tick-label">Dec</span></div>
-        <div class="month-tick" style="left: 20%;"><span class="tick-label">Jan 26</span></div>
-        <div class="month-tick" style="left: 26.7%;"><span class="tick-label">Feb</span></div>
-        <div class="month-tick" style="left: 33.3%;"><span class="tick-label">Mar</span></div>
-        <div class="month-tick" style="left: 40%;"><span class="tick-label">Apr</span></div>
-        <div class="month-tick" style="left: 46.7%;"><span class="tick-label">May</span></div>
-        <div class="month-tick" style="left: 53.3%;"><span class="tick-label">Jun</span></div>
-        <div class="month-tick" style="left: 60%;"><span class="tick-label">Jul</span></div>
-        <div class="month-tick" style="left: 66.7%;"><span class="tick-label">Aug</span></div>
-        <div class="month-tick" style="left: 73.3%;"><span class="tick-label">Sep</span></div>
-        <div class="month-tick" style="left: 80%;"><span class="tick-label">Oct</span></div>
-        <div class="month-tick" style="left: 86.7%;"><span class="tick-label">Nov</span></div>
-        <div class="month-tick" style="left: 93.3%;"><span class="tick-label">Dec</span></div>
-      </div>
-      <div class="lanes-below">
-        <div class="lane">
-          <div class="event-bar past short" style="left: 6.359649122807018%; width: 1.2%;"
-               data-name="Rally Qassim 2025" data-status="past" 
-               data-dates="30 Oct - 3 Nov" data-aircraft="HZHC57, HZHC55, HZHC58" 
-               data-pilots="Will, Ivona, Stephan" onclick="showEventPopup(this, event)"
-               title="Rally Qassim 2025 (30 Oct - 3 Nov)">
-            <span class="event-title">Rally Qass…</span>
-          </div>
-          <div class="event-bar current short" style="left: 26.31578947368421%; width: 1.2%;"
-               data-name="Rally Hail 2026" data-status="current" 
-               data-dates="29 Jan - 1 Feb" data-aircraft="HZHC54, HZHC58, HZHC62, HZHC63" 
-               data-pilots="David, Stephan, Will, David L" onclick="showEventPopup(this, event)"
-               title="Rally Hail 2026 (29 Jan - 1 Feb)">
-            <span class="event-title">Rally Hail…</span>
-          </div>
-          <div class="event-bar pending short" style="left: 94.07894736842105%; width: 1.2%;"
-               data-name="Jeddah Rally 2026" data-status="pending" 
-               data-dates="4-5 Dec" data-aircraft="TBD" 
-               data-pilots="TBD" onclick="showEventPopup(this, event)"
-               title="Jeddah Rally 2026 (4-5 Dec)">
-            <span class="event-title">Jeddah Ral…</span>
-          </div>
-        </div>
-        <div class="lane">
-          <div class="event-bar past short" style="left: 12.06140350877193%; width: 1.3157894736842106%;"
-               data-name="Rally WRC 2025" data-status="past" 
-               data-dates="25 Nov - 1 Dec" data-aircraft="HZHC57, HZHC55, HZHC62, HZHC64, HZHC59" 
-               data-pilots="Will, Roberto, Nathan, David, Lisa" onclick="showEventPopup(this, event)"
-               title="Rally WRC 2025 (25 Nov - 1 Dec)">
-            <span class="event-title">Rally WRC …</span>
-          </div>
-          <div class="event-bar future" style="left: 28.50877192982456%; width: 71.49122807017544%;"
-               data-name="Riyadh UAM" data-status="future" 
-               data-dates="8 Feb - 31 Dec" data-aircraft="HZHC66, HZHC67" 
-               data-pilots="Rohit Kaundinya, Will Lawrence, Lisa le Roux, David Leipsig, David Schicht" onclick="showEventPopup(this, event)">
-            <span class="event-title">Riyadh UAM</span>
-            <span class="event-dates">8 Feb - 31 Dec</span>
-          </div>
-        </div>
-        <div class="lane">
-          <div class="event-bar past" style="left: 19.078947368421055%; width: 4.8245614035087705%;"
-               data-name="Rally Dakar 2026" data-status="past" 
-               data-dates="27 Dec - 18 Jan" data-aircraft="TBD" 
-               data-pilots="Gilles, Ivona, Lindsay, Matt, Nathan, Stephan, Will" onclick="showEventPopup(this, event)">
-            <span class="event-title">Rally Dakar 2026</span>
-            <span class="event-dates">27 Dec - 18 Jan</span>
-          </div>
-          <div class="event-bar pending short" style="left: 40.35087719298245%; width: 1.2%;"
-               data-name="Al Jouf Rally" data-status="pending" 
-               data-dates="3-4 Apr" data-aircraft="TBD" 
-               data-pilots="TBD" onclick="showEventPopup(this, event)"
-               title="Al Jouf Rally (3-4 Apr)">
-            <span class="event-title">Al Jouf Ra…</span>
-          </div>
-        </div>
-      </div>
-    </div>
-    </div>
+    <div class="timeline-item current" data-start="2026-01-25" data-end="2026-02-01"><span class="timeline-title">AlUla Tour 2026</span></div>
+    <div class="timeline-item current" data-start="2026-01-29" data-end="2026-02-01"><span class="timeline-title">Rally Hail 2026</span></div>
+    <div class="timeline-item future" data-start="2026-02-06" data-end="2026-02-07"><span class="timeline-title">Al Fursan Cup</span></div>
+    <div class="timeline-item future" data-start="2026-02-08" data-end="2026-12-31"><span class="timeline-title">Riyadh UAM</span></div>
+    <div class="timeline-item pending" data-start="2026-03-01" data-end="2026-12-31"><span class="timeline-title">Skybridge</span></div>
+    <div class="timeline-item pending" data-start="2026-04-03" data-end="2026-04-04"><span class="timeline-title">Al Jouf Rally</span></div>
+    <div class="timeline-item pending" data-start="2026-05-08" data-end="2026-05-09"><span class="timeline-title">Rally Qassim 2026</span></div>
+    <div class="timeline-item pending" data-start="2026-12-04" data-end="2026-12-05"><span class="timeline-title">Jeddah Rally 2026</span></div>
     <!-- TIMELINE_END -->
 
   </div>
@@ -630,7 +492,7 @@ const bases = {
 const fleet = [
   { reg: "HZHC52", loc: "RUH", status: "parked", note: "For Sale" },
   { reg: "HZHC54", loc: "OEHL", status: "flying", mission: "PAX135 - SMC", pilot: "Schicht" },
-  { reg: "HZHC55", loc: "OEAO", status: "flying", mission: "Filming -133 - AlUla Tour 2026", pilot: "Bonet" },
+  { reg: "HZHC55", loc: "OEAO", status: "flying", mission: "Filming -133 - AlUla Tour 2026", pilot: "Bonnett" },
   { reg: "HZHC57", loc: "RUH", status: "maint", note: "Post Dakar" },
   { reg: "HZHC58", loc: "OEHL", status: "flying", mission: "Filming -133 - SMC", pilot: "Mayer" },
   { reg: "HZHC59", loc: "RUH", status: "parked" },
