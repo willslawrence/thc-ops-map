@@ -47,13 +47,10 @@ def load_helicopters():
     for f in sorted(glob.glob(f"{HELIS_DIR}/HZHC*.md")):
         data = parse_frontmatter(f)
         status_raw = data.get('status', 'parked').lower()
-        # Map status values
         if 'serviceable' in status_raw or 'parked' in status_raw:
             status = 'parked'
         elif 'maint' in status_raw or 'aog' in status_raw:
             status = 'maint'
-        elif 'flying' in status_raw:
-            status = 'flying'
         else:
             status = 'parked'
         helicopters.append({
@@ -79,12 +76,10 @@ def load_flights():
                     reg = parts[1].strip()
                     if not reg.startswith('HZ'):
                         reg = 'HZHC' + reg.replace('HC', '')
-                    mission = parts[2].strip()
-                    pilot = parts[3].strip()
-                    flights.append({'reg': reg, 'mission': mission, 'pilot': pilot})
-                    today_flying[reg] = pilot
+                    flights.append({'reg': reg, 'mission': parts[2], 'pilot': parts[3]})
+                    today_flying[reg] = parts[3]
     except Exception as e:
-        print(f"  Warning loading flights: {e}")
+        print(f"  Warning: {e}")
     print(f"✅ Loaded {len(flights)} flights for today")
     return flights, today_flying
 
@@ -92,7 +87,6 @@ def load_currency():
     currency = []
     for pilot_dir in glob.glob(f"{PILOTS_DIR}/*/"):
         name = os.path.basename(pilot_dir.rstrip('/'))
-        # Find the main pilot file (same name as folder)
         pilot_file = os.path.join(pilot_dir, f"{name}.md")
         if os.path.exists(pilot_file):
             try:
@@ -142,13 +136,72 @@ def build_fleet_js(helicopters, today_flying):
     print(f"✅ Fleet: {counts.get('parked',0)} serviceable, {counts.get('flying',0)} flying, {counts.get('maint',0)} maintenance")
     return '\n'.join(lines)
 
-def build_flights_html(flights):
-    if not flights: return '<div class="no-flights">No flights scheduled today</div>'
-    return '\n'.join([f'  <div class="flight-row today"><span class="reg">{f["reg"].replace("HZHC","HC")}</span><span class="info">{f["mission"]}</span><span class="pilot">{f["pilot"]}</span></div>' for f in flights])
+def build_flights_html():
+    """Build flights HTML with headers from schedule file."""
+    lines = []
+    try:
+        with open(FLIGHTS_FILE, 'r') as f:
+            content = f.read()
+        today_str = TODAY.strftime("%Y-%m-%d")
+        for line in content.split('\n'):
+            if line.startswith('## '):
+                lines.append(f'  <h4>{line[3:].strip()}</h4>')
+            elif '|' in line and 'HC' in line and not line.startswith('#'):
+                parts = [p.strip() for p in line.split('|')]
+                if len(parts) >= 4:
+                    date_part = parts[0].strip()
+                    reg = parts[1].replace('HC', 'HC').strip()
+                    if reg.startswith('HZHC'):
+                        reg = reg.replace('HZHC', 'HC')
+                    mission = parts[2].strip()
+                    pilot = parts[3].strip()
+                    is_today = date_part == today_str
+                    cls = "flight-row today" if is_today else "flight-row"
+                    lines.append(f'  <div class="{cls}"><span class="reg">{reg}</span><span class="info">{mission}</span><span class="pilot">{pilot}</span></div>')
+    except Exception as e:
+        return f'<div class="no-flights">Error: {e}</div>'
+    return '\n'.join(lines) if lines else '<div class="no-flights">No flights</div>'
 
 def build_currency_html(currency):
-    if not currency: return '<div class="no-currency">No currency data</div>'
-    return '\n'.join([f'  <div class="currency-row"><span class="pilot-name">{c["name"]}</span><span class="medical">{c["medical"]}</span><span class="rems">{c["rems"]}</span></div>' for c in currency])
+    """Build currency HTML with alerts."""
+    lines = []
+    rems_issues = []
+    medical_issues = []
+    
+    for c in currency:
+        name, rems, medical = c['name'], c.get('rems', ''), c.get('medical', '')
+        if rems:
+            try:
+                rems_date = datetime.strptime(rems, "%Y-%m")
+                months_ago = (TODAY.year - rems_date.year) * 12 + (TODAY.month - rems_date.month)
+                if months_ago > 6:
+                    rems_issues.append((name, rems_date.strftime("%B %Y"), 'danger'))
+                elif months_ago >= 5:
+                    rems_issues.append((name, rems_date.strftime("%B %Y"), 'warn'))
+            except: pass
+        if medical:
+            try:
+                med_date = datetime.strptime(medical, "%Y-%m-%d")
+                days_left = (med_date - TODAY).days
+                if days_left < 0:
+                    medical_issues.append((name, "expired " + med_date.strftime("%B %Y"), 'danger'))
+                elif days_left < 60:
+                    medical_issues.append((name, med_date.strftime("%B"), 'warn'))
+            except: pass
+    
+    if rems_issues:
+        lines.append('  <h4>30-Min REMS (6 month cycle)</h4>')
+        for name, dt, lvl in rems_issues:
+            icon = "🔴" if lvl == 'danger' else "⚠️"
+            lines.append(f'  <div class="alert {lvl}">{icon} {name} — {dt}</div>')
+    if medical_issues:
+        lines.append('  <h4>Medical Certificate</h4>')
+        for name, dt, lvl in medical_issues:
+            icon = "🔴" if lvl == 'danger' else "⚠️"
+            lines.append(f'  <div class="alert {lvl}">{icon} {name} — {dt}</div>')
+    if not lines:
+        lines.append('  <div class="alert ok">✅ All pilots current</div>')
+    return '\n'.join(lines)
 
 def build_timeline_html(missions):
     tbd = [m for m in missions if not m['date']]
@@ -224,7 +277,6 @@ def build_timeline_html(missions):
         for m in sorted(lane, key=lambda x: x['start_dt']): L.append(bar(m))
         L.append('        </div>')
     L.append('      </div>')
-    
     L.append('      <div class="timeline-axis">')
     L.append('        <div class="axis-line"></div>')
     curr = min_date
@@ -235,7 +287,6 @@ def build_timeline_html(missions):
     if min_date <= TODAY <= max_date:
         L.append(f'      <div class="today-marker" style="left: {round(((TODAY - min_date).days / total_days) * 100, 1)}%;"><span>Today</span></div>')
     L.append('      </div>')
-    
     L.append('      <div class="lanes-below">')
     for lane in lanes_below:
         L.append('        <div class="lane">')
@@ -252,7 +303,6 @@ def update_html(content, fleet_js, flights_html, currency_html, timeline_html):
     content = re.sub(r'<!-- CURRENCY_START -->.*?<!-- CURRENCY_END -->', f'<!-- CURRENCY_START -->\n{currency_html}\n  <!-- CURRENCY_END -->', content, flags=re.DOTALL)
     content = re.sub(r'<!-- TIMELINE_START -->.*?<!-- TIMELINE_END -->', f'<!-- TIMELINE_START -->\n{timeline_html}\n    <!-- TIMELINE_END -->', content, flags=re.DOTALL)
     content = re.sub(r'<title>THC Fleet Map.*?</title>', f'<title>THC Fleet Map — {TODAY.strftime("%-d %b %Y")}</title>', content)
-    # Update last updated timestamp
     content = re.sub(r'<!-- LAST_UPDATED -->.*?<!-- /LAST_UPDATED -->', f'<!-- LAST_UPDATED -->{TODAY.strftime("%-d %b %Y %H:%M")}<!-- /LAST_UPDATED -->', content)
     return content
 
@@ -263,14 +313,13 @@ def main():
     currency = load_currency()
     missions = load_missions()
     fleet_js = build_fleet_js(helicopters, today_flying)
-    flights_html = build_flights_html(flights)
+    flights_html = build_flights_html()
     currency_html = build_currency_html(currency)
     timeline_html = build_timeline_html(missions)
     with open(HTML_FILE, 'r') as f: html = f.read()
     html = update_html(html, fleet_js, flights_html, currency_html, timeline_html)
     with open(HTML_FILE, 'w') as f: f.write(html)
     print(f"\n✅ Updated {HTML_FILE}")
-    print(f"✅ Title: THC Fleet Map — {TODAY.strftime('%-d %b %Y')}")
     print(f"\nDone! open {HTML_FILE}")
 
 if __name__ == "__main__": main()

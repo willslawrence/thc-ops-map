@@ -391,7 +391,7 @@
 </head>
 <body>
 <div id="map"></div>
-<div id="last-updated">Last updated: <!-- LAST_UPDATED -->31 Jan 2026 23:25<!-- /LAST_UPDATED --></div>
+<div id="last-updated">Last updated: <!-- LAST_UPDATED -->31 Jan 2026 23:31<!-- /LAST_UPDATED --></div>
 
 <!-- Timeline Toggle Button -->
 <button class="timeline-toggle" onclick="toggleTimeline()">📅 Missions</button>
@@ -406,11 +406,17 @@
   <div class="panel-body">
 
   <!-- FLIGHTS_START -->
+  <h4>Today — 31 Jan</h4>
   <div class="flight-row today"><span class="reg">HC54</span><span class="info">PAX135 - SMC</span><span class="pilot">Schicht</span></div>
   <div class="flight-row today"><span class="reg">HC62</span><span class="info">PAX135 - SMC</span><span class="pilot">Lawrence</span></div>
   <div class="flight-row today"><span class="reg">HC63</span><span class="info">PAX135 - SMC</span><span class="pilot">Leipsig</span></div>
   <div class="flight-row today"><span class="reg">HC58</span><span class="info">Filming -133 - SMC</span><span class="pilot">Mayer</span></div>
   <div class="flight-row today"><span class="reg">HC55</span><span class="info">Filming -133 - AlUla Tour 2026</span><span class="pilot">Bonnett</span></div>
+  <h4>01 Feb — Repositioning to OETH</h4>
+  <div class="flight-row"><span class="reg">HC54</span><span class="info">Operational Reposition - OETH</span><span class="pilot">Schicht</span></div>
+  <div class="flight-row"><span class="reg">HC58</span><span class="info">Operational Reposition - OETH</span><span class="pilot">Mayer</span></div>
+  <div class="flight-row"><span class="reg">HC62</span><span class="info">Operational Reposition - OETH</span><span class="pilot">Lawrence</span></div>
+  <div class="flight-row"><span class="reg">HC63</span><span class="info">Operational Reposition - OETH</span><span class="pilot">Leipsig</span></div>
   <!-- FLIGHTS_END -->
 
   </div>
@@ -422,23 +428,30 @@
   </div>
   <div class="panel-body">
   <!-- CURRENCY_START -->
-  <div class="currency-row"><span class="pilot-name">Gilles Plaisance</span><span class="medical">2025-08-25</span><span class="rems">2025-08</span></div>
-  <div class="currency-row"><span class="pilot-name">Ivona Redlinksa</span><span class="medical">2025-03-25</span><span class="rems">2026-01</span></div>
-  <div class="currency-row"><span class="pilot-name">Kevin Allen</span><span class="medical">2025-08-04</span><span class="rems">2025-10</span></div>
-  <div class="currency-row"><span class="pilot-name">Lisa le Roux</span><span class="medical">2025-02-27</span><span class="rems">2025-11</span></div>
-  <div class="currency-row"><span class="pilot-name">Lindsay Pentz</span><span class="medical">2026-01-20</span><span class="rems">2025-10</span></div>
-  <div class="currency-row"><span class="pilot-name">Will Lawrence</span><span class="medical">2026-01-25</span><span class="rems">2025-10</span></div>
-  <div class="currency-row"><span class="pilot-name">Julio Bonet</span><span class="medical">2025-05-14</span><span class="rems"></span></div>
-  <div class="currency-row"><span class="pilot-name">Marius Hertz</span><span class="medical">2025-05-27</span><span class="rems">2026-10</span></div>
-  <div class="currency-row"><span class="pilot-name">Dan Munteanu</span><span class="medical">2025-03-17</span><span class="rems"></span></div>
-  <div class="currency-row"><span class="pilot-name">David Leipsig</span><span class="medical">2025-03-13</span><span class="rems">2025-10</span></div>
-  <div class="currency-row"><span class="pilot-name">David Schicht</span><span class="medical">2025-12-08</span><span class="rems">2025-08</span></div>
-  <div class="currency-row"><span class="pilot-name">Rohit Kaundinya</span><span class="medical">2026-01-21</span><span class="rems">NA</span></div>
-  <div class="currency-row"><span class="pilot-name">Roberto Piani</span><span class="medical">2025-12-12</span><span class="rems">2026-11</span></div>
-  <div class="currency-row"><span class="pilot-name">Nathan Piper</span><span class="medical">2025-01-19</span><span class="rems">2025-08</span></div>
-  <div class="currency-row"><span class="pilot-name">Matthias Klemp</span><span class="medical">2025-12-17</span><span class="rems">2025-01</span></div>
-  <div class="currency-row"><span class="pilot-name">Stephan Mayer</span><span class="medical">2025-05-14</span><span class="rems">2025-12</span></div>
-  <div class="currency-row"><span class="pilot-name">Matt O'brien</span><span class="medical">2026-01-26</span><span class="rems">2025-05</span></div>
+  <h4>30-Min REMS (6 month cycle)</h4>
+  <div class="alert warn">⚠️ Gilles Plaisance — August 2025</div>
+  <div class="alert warn">⚠️ David Schicht — August 2025</div>
+  <div class="alert warn">⚠️ Nathan Piper — August 2025</div>
+  <div class="alert danger">🔴 Matthias Klemp — January 2025</div>
+  <div class="alert danger">🔴 Matt O'brien — May 2025</div>
+  <h4>Medical Certificate</h4>
+  <div class="alert danger">🔴 Gilles Plaisance — expired August 2025</div>
+  <div class="alert danger">🔴 Ivona Redlinksa — expired March 2025</div>
+  <div class="alert danger">🔴 Kevin Allen — expired August 2025</div>
+  <div class="alert danger">🔴 Lisa le Roux — expired February 2025</div>
+  <div class="alert danger">🔴 Lindsay Pentz — expired January 2026</div>
+  <div class="alert danger">🔴 Will Lawrence — expired January 2026</div>
+  <div class="alert danger">🔴 Julio Bonet — expired May 2025</div>
+  <div class="alert danger">🔴 Marius Hertz — expired May 2025</div>
+  <div class="alert danger">🔴 Dan Munteanu — expired March 2025</div>
+  <div class="alert danger">🔴 David Leipsig — expired March 2025</div>
+  <div class="alert danger">🔴 David Schicht — expired December 2025</div>
+  <div class="alert danger">🔴 Rohit Kaundinya — expired January 2026</div>
+  <div class="alert danger">🔴 Roberto Piani — expired December 2025</div>
+  <div class="alert danger">🔴 Nathan Piper — expired January 2025</div>
+  <div class="alert danger">🔴 Matthias Klemp — expired December 2025</div>
+  <div class="alert danger">🔴 Stephan Mayer — expired May 2025</div>
+  <div class="alert danger">🔴 Matt O'brien — expired January 2026</div>
   <!-- CURRENCY_END -->
   </div>
 </div>
