@@ -308,7 +308,7 @@ def build_timeline(missions):
         c += timedelta(days=1)
     
     if mn <= TODAY <= mx: 
-        L.append(f'        <div class="today-marker" style="left:{round(((TODAY-mn).days/td)*100,1)}%;"><span>Today</span></div>')
+        L.append(f'        <div class="today-marker" style="left:{round(((TODAY-mn).days/td)*100,1)}%;"></div>')
     
     L.append('      </div>')
     L.append('      <div class="lanes-below">')
