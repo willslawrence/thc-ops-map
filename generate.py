@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os, re, glob
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 
 VAULT = os.path.expanduser("~/Library/Mobile Documents/iCloud~md~obsidian/Documents/THC Vault")
 HELIS_DIR = f"{VAULT}/Helicopters"
@@ -8,7 +9,9 @@ PILOTS_DIR = f"{VAULT}/Pilots"
 FLIGHTS_FILE = f"{VAULT}/Flights Schedule.md"
 MISSIONS_DIR = f"{VAULT}/Missions"
 HTML_FILE = os.path.join(os.path.dirname(__file__), "index.html")
-TODAY = datetime.now()
+# Use Saudi Arabia timezone, then strip tz for naive comparisons
+_now = datetime.now(ZoneInfo("Asia/Riyadh"))
+TODAY = datetime(_now.year, _now.month, _now.day, _now.hour, _now.minute, _now.second)
 
 def parse_fm(fp):
     d = {}
@@ -43,7 +46,7 @@ def load_helis():
     return h
 
 def load_flights():
-    fl, fy = [], {}
+    fl, fy, fr = [], {}, {}  # fr = flight routes
     try:
         t = open(FLIGHTS_FILE).read()
         ts = TODAY.strftime("%Y-%m-%d")
@@ -52,11 +55,17 @@ def load_flights():
                 p = [x.strip() for x in ln.split('|')]
                 if len(p) >= 4:
                     r = 'HZHC' + p[1].replace('HC','') if not p[1].startswith('HZ') else p[1]
-                    fl.append({'reg': r, 'mission': p[2], 'pilot': p[3]})
+                    mission = p[2]
+                    fl.append({'reg': r, 'mission': mission, 'pilot': p[3]})
                     fy[r] = p[3]
+                    # Parse route for repositions (dest is 4-letter ICAO code)
+                    if 'reposition' in mission.lower() and ' - ' in mission:
+                        dest = mission.split(' - ')[-1].strip()
+                        if len(dest) == 4 and dest.isupper():  # ICAO code
+                            fr[r] = {'mission': mission, 'dest': dest}
     except: pass
     print(f"✅ Loaded {len(fl)} flights")
-    return fl, fy
+    return fl, fy, fr
 
 def load_currency():
     c = []
@@ -87,7 +96,7 @@ def load_missions():
     print(f"✅ Loaded {len(m)} missions")
     return m
 
-def build_fleet_js(helis, fy):
+def build_fleet_js(helis, fy, fr):
     L = ["const fleet = ["]
     cnt = {'parked':0, 'flying':0, 'maint':0}
     for h in helis:
@@ -97,6 +106,10 @@ def build_fleet_js(helis, fy):
         if h['note']: e += f', note: "{h["note"]}"'
         if h['mission']: e += f', mission: "{h["mission"]}"'
         if h['reg'] in fy: e += f', pilot: "{fy[h["reg"]]}"'
+        # Add route info for flying helicopters
+        if h['reg'] in fr:
+            route = fr[h['reg']]
+            e += f', route: "{h["loc"]} → {route["dest"]}"'
         L.append(e + ' },')
     L.append("];")
     print(f"✅ Fleet: {cnt['parked']} serviceable, {cnt['flying']} flying, {cnt['maint']} maint")
@@ -134,11 +147,11 @@ def build_currency_html(curr):
             try:
                 cd = datetime.strptime(cp, "%Y-%m-%d")
                 exp = cd.replace(year=cd.year+1)
-                first_name = c['name'].split()[0]
+                first_name = c['name'].split()[0] + ' ' + c['name'].split()[-1][0] if len(c['name'].split()) > 1 else c['name'].split()[0]
                 if this_mo <= exp < this_mo_end:
-                    comp_this.append((first_name, exp.strftime("%b %y")))
+                    comp_this.append((first_name, exp.strftime("%b %Y")))
                 elif next_mo <= exp < next_mo_end:
-                    comp_next.append((first_name, exp.strftime("%b %y")))
+                    comp_next.append((first_name, exp.strftime("%b %Y")))
             except: pass
     L.append('  <h4>Competency Checks</h4>')
     if comp_this:
@@ -164,13 +177,13 @@ def build_currency_html(curr):
                 exp_month = ((exp_month - 1) % 12) + 1
                 exp = datetime(exp_year, exp_month, 1)
                 exp_end = (exp + timedelta(days=32)).replace(day=1)  # First of next month
-                first_name = c['name'].split()[0]
+                first_name = c['name'].split()[0] + ' ' + c['name'].split()[-1][0] if len(c['name'].split()) > 1 else c['name'].split()[0]
                 if TODAY >= exp_end:
                     # Expired (we're past the expiry month)
-                    rems_issues.append((first_name, exp.strftime("%b %y"), 'danger', 'expired'))
+                    rems_issues.append((first_name, exp.strftime("%b %Y"), 'danger', 'expired'))
                 elif this_mo <= exp < this_mo_end:
                     # Expires this month
-                    rems_issues.append((first_name, exp.strftime("%b %y"), 'warn', 'expires'))
+                    rems_issues.append((first_name, exp.strftime("%b %Y"), 'warn', 'expires'))
             except: pass
     if rems_issues:
         L.append('  <h4>30-Min REMS (6 month validity)</h4>')
@@ -187,13 +200,13 @@ def build_currency_html(curr):
             try:
                 md = datetime.strptime(m, "%Y-%m-%d")
                 exp = md.replace(year=md.year+1)
-                first_name = c['name'].split()[0]
+                first_name = c['name'].split()[0] + ' ' + c['name'].split()[-1][0] if len(c['name'].split()) > 1 else c['name'].split()[0]
                 if exp < this_month_start:
                     # Overdue
-                    med_issues.append((first_name, exp.strftime("%b %y"), 'danger', 'overdue since'))
+                    med_issues.append((first_name, exp.strftime("%b %Y"), 'danger', 'overdue since'))
                 elif this_month_start <= exp < this_month_end:
                     # Due this month
-                    med_issues.append((first_name, exp.strftime("%b %y"), 'warn', 'due'))
+                    med_issues.append((first_name, exp.strftime("%b %Y"), 'warn', 'due'))
                 # Future months: don't show
             except: pass
     if med_issues:
@@ -234,7 +247,7 @@ def build_timeline(missions):
         elif s.month==e.month: return f"{s.day}-{e.strftime('%-d %b')}"
         return f"{s.strftime('%-d %b')} - {e.strftime('%-d %b')}"
     
-    def ovl(a,b): return not (a['e']+timedelta(days=2) < b['s'] or b['e']+timedelta(days=2) < a['s'])
+    def ovl(a,b): return not (a['e']+timedelta(days=7) < b['s'] or b['e']+timedelta(days=7) < a['s'])
     
     # Pack into exactly 3 lanes above, 3 below (6 total)
     def pack_limited(evs, max_lanes=6):
@@ -320,11 +333,11 @@ def update(html, fleet, flights, curr, timeline):
 def main():
     print(f"\n🚁 THC Fleet Map Generator\n   {TODAY.strftime('%Y-%m-%d %H:%M:%S')}\n")
     h = load_helis()
-    fl, fy = load_flights()
+    fl, fy, fr = load_flights()
     c = load_currency()
     m = load_missions()
     html = open(HTML_FILE).read()
-    html = update(html, build_fleet_js(h, fy), build_flights_html(), build_currency_html(c), build_timeline(m))
+    html = update(html, build_fleet_js(h, fy, fr), build_flights_html(), build_currency_html(c), build_timeline(m))
     open(HTML_FILE, 'w').write(html)
     print(f"\n✅ Done!")
 

@@ -400,7 +400,7 @@
 </head>
 <body>
 <div id="map"></div>
-<div id="last-updated">Last updated: <!-- LAST_UPDATED -->1 Feb 2026 00:26<!-- /LAST_UPDATED --></div>
+<div id="last-updated">Last updated: <!-- LAST_UPDATED -->1 Feb 2026 07:52<!-- /LAST_UPDATED --></div>
 
 <!-- Timeline Toggle Button -->
 <button class="timeline-toggle" onclick="toggleTimeline()">📅 Missions</button>
@@ -415,13 +415,13 @@
   <div class="panel-body">
 
   <!-- FLIGHTS_START -->
-  <h4>Today — 31 Jan</h4>
+  <h4>Yesterday — 31 Jan</h4>
   <div class="flight-row"><span class="reg">HC54</span><span class="info">PAX135 - SMC</span><span class="pilot">Schicht</span></div>
   <div class="flight-row"><span class="reg">HC62</span><span class="info">PAX135 - SMC</span><span class="pilot">Lawrence</span></div>
   <div class="flight-row"><span class="reg">HC63</span><span class="info">PAX135 - SMC</span><span class="pilot">Leipsig</span></div>
   <div class="flight-row"><span class="reg">HC58</span><span class="info">Filming -133 - SMC</span><span class="pilot">Mayer</span></div>
   <div class="flight-row"><span class="reg">HC55</span><span class="info">Filming -133 - AlUla Tour 2026</span><span class="pilot">Bonnett</span></div>
-  <h4>01 Feb — Repositioning to OETH</h4>
+  <h4>Today — 01 Feb — Repositioning to OETH</h4>
   <div class="flight-row today"><span class="reg">HC54</span><span class="info">Operational Reposition - OETH</span><span class="pilot">Schicht</span></div>
   <div class="flight-row today"><span class="reg">HC58</span><span class="info">Operational Reposition - OETH</span><span class="pilot">Mayer</span></div>
   <div class="flight-row today"><span class="reg">HC62</span><span class="info">Operational Reposition - OETH</span><span class="pilot">Lawrence</span></div>
@@ -440,14 +440,14 @@
   <h4>Competency Checks</h4>
   <div class="alert ok">✅ Nobody due this or next month</div>
   <h4>30-Min REMS (6 month validity)</h4>
-  <div class="alert danger">🔴 Gilles - expired Jan 26</div>
-  <div class="alert danger">🔴 David - expired Jan 26</div>
-  <div class="alert danger">🔴 Nathan - expired Jan 26</div>
-  <div class="alert danger">🔴 Matthias - expired Jun 25</div>
-  <div class="alert danger">🔴 Matt - expired Oct 25</div>
+  <div class="alert danger">🔴 Gilles P - expired Jan 2026</div>
+  <div class="alert danger">🔴 David S - expired Jan 2026</div>
+  <div class="alert danger">🔴 Nathan P - expired Jan 2026</div>
+  <div class="alert danger">🔴 Matthias K - expired Jun 2025</div>
+  <div class="alert danger">🔴 Matt O - expired Oct 2025</div>
   <h4>Medical Certificate (12 month validity)</h4>
-  <div class="alert danger">🔴 Nathan - overdue since Jan 26</div>
-  <div class="alert warn">⚠️ Lisa - due Feb 26</div>
+  <div class="alert danger">🔴 Nathan P - overdue since Jan 2026</div>
+  <div class="alert warn">⚠️ Lisa R - due Feb 2026</div>
   <!-- CURRENCY_END -->
   </div>
 </div>
@@ -480,21 +480,20 @@
     <div class="timeline-body">
       <div class="lanes-above">
         <div class="lane">
-          <div class="event-bar current short" style="left:7.7%;width:1.2%;" data-name="Rally Hail 2026" data-status="current" data-dates="29 Jan - 1 Feb" data-aircraft="HZHC54, HZHC58, HZHC62, HZHC63" data-pilots="David, Stephan, Will, David L" onclick="showEventPopup(this,event)" title="Rally Hail 2026 (29 Jan - 1 Feb)">
-            <span class="event-title">Rally Hail...</span>
-          </div>
-          <div class="event-bar future " style="left:10.4%;width:89.6%;" data-name="Riyadh UAM" data-status="future" data-dates="8 Feb - 31 Dec" data-aircraft="HZHC66, HZHC67" data-pilots="Rohit Kaundinya, Will Lawrence, Lisa le Roux, David Leipsig, David Schicht" onclick="showEventPopup(this,event)" title="Riyadh UAM (8 Feb - 31 Dec)">
-            <span class="event-title">Riyadh UAM</span>
-            <span class="event-dates">8 Feb - 31 Dec</span>
+          <div class="event-bar future short" style="left:9.9%;width:1.2%;" data-name="Al Fursan Cup" data-status="future" data-dates="6-7 Feb" data-aircraft="HZHC55" data-pilots="Lisa" onclick="showEventPopup(this,event)" title="Al Fursan Cup (6-7 Feb)">
+            <span class="event-title">Al Fursan ...</span>
           </div>
         </div>
         <div class="lane">
-          <div class="event-bar past " style="left:0.0%;width:46.2%;" data-name="Rally Dakar 2026" data-status="past" data-dates="27 Dec - 18 Jun" data-aircraft="TBD" data-pilots="Gilles, Ivona, Lindsay, Matt, Nathan, Stephan, Will" onclick="showEventPopup(this,event)" title="Rally Dakar 2026 (27 Dec - 18 Jun)">
-            <span class="event-title">Rally Dakar 2026</span>
-            <span class="event-dates">27 Dec - 18 Jun</span>
+          <div class="event-bar past short" style="left:0.0%;width:4.7%;" data-name="Rally Dakar 2026" data-status="past" data-dates="27 Dec - 18 Jan" data-aircraft="TBD" data-pilots="Gilles, Ivona, Lindsay, Matt, Nathan, Stephan, Will" onclick="showEventPopup(this,event)" title="Rally Dakar 2026 (27 Dec - 18 Jan)">
+            <span class="event-title">Rally Daka...</span>
           </div>
-          <div class="event-bar pending short" style="left:92.6%;width:1.2%;" data-name="Jeddah Rally 2026" data-status="pending" data-dates="4-5 Dec" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)" title="Jeddah Rally 2026 (4-5 Dec)">
-            <span class="event-title">Jeddah Ral...</span>
+          <div class="event-bar current short" style="left:7.7%;width:1.2%;" data-name="Rally Hail 2026" data-status="current" data-dates="29 Jan - 1 Feb" data-aircraft="HZHC54, HZHC58, HZHC62, HZHC63" data-pilots="David, Stephan, Will, David L" onclick="showEventPopup(this,event)" title="Rally Hail 2026 (29 Jan - 1 Feb)">
+            <span class="event-title">Rally Hail...</span>
+          </div>
+          <div class="event-bar pending " style="left:16.2%;width:83.8%;" data-name="Skybridge" data-status="pending" data-dates="1 Mar - 31 Dec" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)" title="Skybridge (1 Mar - 31 Dec)">
+            <span class="event-title">Skybridge</span>
+            <span class="event-dates">1 Mar - 31 Dec</span>
           </div>
         </div>
       </div>
@@ -570,20 +569,20 @@
           <div class="event-bar current short" style="left:6.6%;width:1.9%;" data-name="AlUla Tour 2026" data-status="current" data-dates="25 Jan - 1 Feb" data-aircraft="HZHC55" data-pilots="Bonet" onclick="showEventPopup(this,event)" title="AlUla Tour 2026 (25 Jan - 1 Feb)">
             <span class="event-title">AlUla Tour...</span>
           </div>
-          <div class="event-bar future short" style="left:9.9%;width:1.2%;" data-name="Al Fursan Cup" data-status="future" data-dates="6-7 Feb" data-aircraft="HZHC55" data-pilots="Lisa" onclick="showEventPopup(this,event)" title="Al Fursan Cup (6-7 Feb)">
-            <span class="event-title">Al Fursan ...</span>
-          </div>
-          <div class="event-bar pending " style="left:16.2%;width:83.8%;" data-name="Skybridge" data-status="pending" data-dates="1 Mar - 31 Dec" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)" title="Skybridge (1 Mar - 31 Dec)">
-            <span class="event-title">Skybridge</span>
-            <span class="event-dates">1 Mar - 31 Dec</span>
-          </div>
-        </div>
-        <div class="lane">
           <div class="event-bar pending short" style="left:25.3%;width:1.2%;" data-name="Al Jouf Rally" data-status="pending" data-dates="3-4 Apr" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)" title="Al Jouf Rally (3-4 Apr)">
             <span class="event-title">Al Jouf Ra...</span>
           </div>
           <div class="event-bar pending short" style="left:34.9%;width:1.2%;" data-name="Rally Qassim 2026" data-status="pending" data-dates="8-9 May" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)" title="Rally Qassim 2026 (8-9 May)">
             <span class="event-title">Rally Qass...</span>
+          </div>
+          <div class="event-bar pending short" style="left:92.6%;width:1.2%;" data-name="Jeddah Rally 2026" data-status="pending" data-dates="4-5 Dec" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)" title="Jeddah Rally 2026 (4-5 Dec)">
+            <span class="event-title">Jeddah Ral...</span>
+          </div>
+        </div>
+        <div class="lane">
+          <div class="event-bar future " style="left:10.4%;width:89.6%;" data-name="Riyadh UAM" data-status="future" data-dates="8 Feb - 31 Dec" data-aircraft="HZHC66, HZHC67" data-pilots="Rohit Kaundinya, Will Lawrence, Lisa le Roux, David Leipsig, David Schicht" onclick="showEventPopup(this,event)" title="Riyadh UAM (8 Feb - 31 Dec)">
+            <span class="event-title">Riyadh UAM</span>
+            <span class="event-dates">8 Feb - 31 Dec</span>
           </div>
         </div>
       </div>
@@ -613,13 +612,13 @@ const bases = {
 // FLEET_START
 const fleet = [
   { reg: "HZHC52", loc: "RUH", status: "parked" },
-  { reg: "HZHC54", loc: "OEHL", status: "flying", mission: "PAX135 - SMC", pilot: "Schicht" },
+  { reg: "HZHC54", loc: "OETH", status: "flying", mission: "Available", pilot: "Schicht", route: "OETH → OETH" },
   { reg: "HZHC55", loc: "OEAO", status: "parked", mission: "Filming -133 - AlUla Tour 2026" },
   { reg: "HZHC57", loc: "RUH", status: "maint" },
-  { reg: "HZHC58", loc: "OEHL", status: "flying", mission: "Filming -133 - SMC", pilot: "Mayer" },
+  { reg: "HZHC58", loc: "OETH", status: "flying", mission: "Available", pilot: "Mayer", route: "OETH → OETH" },
   { reg: "HZHC59", loc: "RUH", status: "parked" },
-  { reg: "HZHC62", loc: "OEHL", status: "flying", mission: "PAX135 - SMC", pilot: "Lawrence" },
-  { reg: "HZHC63", loc: "OEHL", status: "flying", mission: "PAX135 - SMC", pilot: "Leipsig" },
+  { reg: "HZHC62", loc: "OETH", status: "flying", mission: "Available", pilot: "Lawrence", route: "OETH → OETH" },
+  { reg: "HZHC63", loc: "OETH", status: "flying", mission: "Available", pilot: "Leipsig", route: "OETH → OETH" },
   { reg: "HZHC64", loc: "OETH", status: "parked" },
   { reg: "HZHC65", loc: "OETH", status: "parked" },
   { reg: "HZHC66", loc: "RUH", status: "parked", mission: "UAM" },
@@ -686,7 +685,7 @@ fleet.forEach(h => {
     `<br>Status: ${h.status === 'flying' ? '🟢 Flying' : h.status === 'maint' ? '🟠 Maintenance' : h.status === 'aog' ? '🔴 AOG' : '🔵 Serviceable'}` +
     (h.note ? `<br><em>${h.note}</em>` : '') +
     (h.mission ? `<br>Mission: ${h.mission}` : '') +
-    (h.pilot ? `<br>PIC: ${h.pilot}` : '')
+    (h.pilot ? `<br>PIC: ${h.pilot}` : '') + (h.route ? `<br>Route: ${h.route}` : '')
   );
 });
 
