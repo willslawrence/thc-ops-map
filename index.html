@@ -157,9 +157,10 @@
   .timeline-legend span { display: flex; align-items: center; gap: 4px; }
   .tl-dot { width: 6px; height: 6px; border-radius: 50%; }
   .tl-dot.current { background: #2ecc71; }
-  .tl-dot.future { background: #3498db; }
+  .tl-dot.future, .tl-dot.confirmed { background: #3498db; }
+  .tl-dot.active { background: #2ecc71; }
   .tl-dot.pending { background: #e74c3c; }
-  .tl-dot.past { background: #666; opacity: 0.5; }
+  .tl-dot.past, .tl-dot.complete { background: #666; opacity: 0.5; }
 
   
   .timeline-wrapper {
@@ -325,11 +326,11 @@
   }
 
 /* Vertical separation used instead of minimized overlaps */
-  .event-bar.current {
+  .event-bar.current, .event-bar.active {
     background: linear-gradient(135deg, rgba(46, 204, 113, 0.85), rgba(46, 204, 113, 0.65));
     border: 1px solid rgba(46, 204, 113, 0.6);
   }
-  .event-bar.future {
+  .event-bar.future, .event-bar.confirmed {
     background: linear-gradient(135deg, rgba(52, 152, 219, 0.85), rgba(52, 152, 219, 0.65));
     border: 1px solid rgba(52, 152, 219, 0.6);
   }
@@ -348,8 +349,8 @@
   }
   .lanes-above .connector { bottom: -6px; height: 6px; }
   .lanes-below .connector { top: -6px; height: 6px; }
-  .event-bar.current .connector { background: #2ecc71; }
-  .event-bar.future .connector { background: #3498db; }
+  .event-bar.current .connector, .event-bar.active .connector { background: #2ecc71; }
+  .event-bar.future .connector, .event-bar.confirmed .connector { background: #3498db; }
   .event-bar.pending .connector { background: #e74c3c; }
 
   /* Event popup */
@@ -384,8 +385,8 @@
     text-transform: uppercase;
     font-weight: 600;
   }
-  .event-popup .status-badge.current { background: rgba(46, 204, 113, 0.3); color: #2ecc71; }
-  .event-popup .status-badge.future { background: rgba(52, 152, 219, 0.3); color: #3498db; }
+  .event-popup .status-badge.current, .event-popup .status-badge.active { background: rgba(46, 204, 113, 0.3); color: #2ecc71; }
+  .event-popup .status-badge.future, .event-popup .status-badge.confirmed { background: rgba(52, 152, 219, 0.3); color: #3498db; }
   .event-popup .status-badge.pending { background: rgba(231, 76, 60, 0.3); color: #e74c3c; }
   .event-popup .detail-row {
     display: flex;
@@ -400,7 +401,7 @@
 </head>
 <body>
 <div id="map"></div>
-<div id="last-updated">Last updated: <!-- LAST_UPDATED -->3 Feb 2026 11:14<!-- /LAST_UPDATED --></div>
+<div id="last-updated">Last updated: <!-- LAST_UPDATED -->3 Feb 2026 18:29<!-- /LAST_UPDATED --></div>
 
 <!-- Timeline Toggle Button -->
 <button class="timeline-toggle" onclick="toggleTimeline()">📅 Missions</button>
@@ -480,12 +481,12 @@
     <div class="timeline-body">
       <div class="lanes-above">
         <div class="lane">
-          <div class="event-bar pending short" style="left:10.4%;width:1.2%;" data-name="Promo Filming" data-status="pending" data-dates="8 Feb" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)" title="Promo Filming (8 Feb)">
+          <div class="event-bar pending short" style="left:10.4%;width:1.2%;" data-name="Promo Filming" data-status="pending" data-dates="8-9 Feb" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)" title="Promo Filming (8-9 Feb)">
             <span class="event-title">Promo Film...</span>
           </div>
         </div>
         <div class="lane">
-          <div class="event-bar active short" style="left:9.6%;width:1.2%;" data-name="Al Fursan Cup" data-status="active" data-dates="5-8 Feb" data-aircraft="TBD" data-pilots="Lisa" onclick="showEventPopup(this,event)" title="Al Fursan Cup (5-8 Feb)">
+          <div class="event-bar confirmed short" style="left:9.6%;width:1.2%;" data-name="Al Fursan Cup" data-status="confirmed" data-dates="5-8 Feb" data-aircraft="TBD" data-pilots="Lisa" onclick="showEventPopup(this,event)" title="Al Fursan Cup (5-8 Feb)">
             <span class="event-title">Al Fursan ...</span>
           </div>
           <div class="event-bar pending short" style="left:25.3%;width:1.2%;" data-name="Yanbu Rally" data-status="pending" data-dates="3-4 Apr" data-aircraft="TBD" data-pilots="Ivona (Film), Matt (EMS 1/Sling), Lindsay (EMS 2), Will (VIP)" onclick="showEventPopup(this,event)" title="Yanbu Rally (3-4 Apr)">
@@ -505,9 +506,15 @@
           <div class="event-bar pending short" style="left:12.6%;width:1.2%;" data-name="Argas" data-status="pending" data-dates="16 Feb" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)" title="Argas (16 Feb)">
             <span class="event-title">Argas</span>
           </div>
-          <div class="event-bar pending " style="left:16.2%;width:83.8%;" data-name="Bahrain Skybridge" data-status="pending" data-dates="1 Mar - 31 Dec" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)" title="Bahrain Skybridge (1 Mar - 31 Dec)">
-            <span class="event-title">Bahrain Skybridge</span>
-            <span class="event-dates">1 Mar - 31 Dec</span>
+          <div class="event-bar pending " style="left:16.2%;width:16.5%;" data-name="GeoTech" data-status="pending" data-dates="1 Mar - 30 Apr" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)" title="GeoTech (1 Mar - 30 Apr)">
+            <span class="event-title">GeoTech</span>
+            <span class="event-dates">1 Mar - 30 Apr</span>
+          </div>
+          <div class="event-bar pending short" style="left:34.9%;width:1.2%;" data-name="Rally Qassim 2026" data-status="pending" data-dates="8-9 May" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)" title="Rally Qassim 2026 (8-9 May)">
+            <span class="event-title">Rally Qass...</span>
+          </div>
+          <div class="event-bar pending short" style="left:91.8%;width:1.2%;" data-name="WRC 2026" data-status="pending" data-dates="1-2 Dec" data-aircraft="TBD" data-pilots="Will (VIP)" onclick="showEventPopup(this,event)" title="WRC 2026 (1-2 Dec)">
+            <span class="event-title">WRC 2026</span>
           </div>
         </div>
       </div>
@@ -583,19 +590,13 @@
           <div class="event-bar complete short" style="left:6.6%;width:1.9%;" data-name="AlUla Tour 2026" data-status="complete" data-dates="25 Jan - 1 Feb" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)" title="AlUla Tour 2026 (25 Jan - 1 Feb)">
             <span class="event-title">AlUla Tour...</span>
           </div>
-          <div class="event-bar pending " style="left:16.2%;width:16.5%;" data-name="GeoTech" data-status="pending" data-dates="1 Mar - 30 Apr" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)" title="GeoTech (1 Mar - 30 Apr)">
-            <span class="event-title">GeoTech</span>
-            <span class="event-dates">1 Mar - 30 Apr</span>
-          </div>
-          <div class="event-bar pending short" style="left:34.9%;width:1.2%;" data-name="Rally Qassim 2026" data-status="pending" data-dates="8-9 May" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)" title="Rally Qassim 2026 (8-9 May)">
-            <span class="event-title">Rally Qass...</span>
-          </div>
-          <div class="event-bar pending short" style="left:91.8%;width:1.2%;" data-name="WRC 2026" data-status="pending" data-dates="1-2 Dec" data-aircraft="TBD" data-pilots="Will (VIP)" onclick="showEventPopup(this,event)" title="WRC 2026 (1-2 Dec)">
-            <span class="event-title">WRC 2026</span>
+          <div class="event-bar pending " style="left:20.1%;width:79.9%;" data-name="Bahrain Skybridge" data-status="pending" data-dates="15 Mar - 31 Dec" data-aircraft="TBD" data-pilots="TBD" onclick="showEventPopup(this,event)" title="Bahrain Skybridge (15 Mar - 31 Dec)">
+            <span class="event-title">Bahrain Skybridge</span>
+            <span class="event-dates">15 Mar - 31 Dec</span>
           </div>
         </div>
         <div class="lane">
-          <div class="event-bar active " style="left:10.4%;width:89.6%;" data-name="Riyadh UAM" data-status="active" data-dates="8 Feb - 31 Dec" data-aircraft="TBD" data-pilots="Rohit Kaundinya, Will Lawrence, Lisa le Roux, David Leipsig, David Schicht" onclick="showEventPopup(this,event)" title="Riyadh UAM (8 Feb - 31 Dec)">
+          <div class="event-bar confirmed " style="left:10.4%;width:89.6%;" data-name="Riyadh UAM" data-status="confirmed" data-dates="8 Feb - 31 Dec" data-aircraft="TBD" data-pilots="Rohit Kaundinya, Will Lawrence, Lisa le Roux, David Leipsig, David Schicht" onclick="showEventPopup(this,event)" title="Riyadh UAM (8 Feb - 31 Dec)">
             <span class="event-title">Riyadh UAM</span>
             <span class="event-dates">8 Feb - 31 Dec</span>
           </div>
@@ -753,7 +754,7 @@ legend.addTo(map);
     bar.onclick = function(e) {
       e.stopPropagation();
       const data = this.dataset;
-      const statusLabel = data.status === 'current' ? 'Current' : data.status === 'future' ? 'Upcoming' : 'Pending';
+      const statusLabel = {'active':'Active','current':'Active','confirmed':'Confirmed','future':'Confirmed','pending':'Pending','past':'Past','complete':'Complete'}[data.status] || data.status;
       
       eventPopup.innerHTML = `
         <h3>
@@ -799,7 +800,7 @@ function showEventPopup(el, e) {
   e.stopPropagation();
   const popup = document.getElementById('eventPopup');
   const data = el.dataset;
-  const statusLabel = data.status === 'current' ? 'Current' : data.status === 'future' ? 'Upcoming' : 'Pending';
+  const statusLabel = {'active':'Active','current':'Active','confirmed':'Confirmed','future':'Confirmed','pending':'Pending','past':'Past','complete':'Complete'}[data.status] || data.status;
   
   // Format aircraft roles as individual lines
   let aircraftHtml = data.aircraft;

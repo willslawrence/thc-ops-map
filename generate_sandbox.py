@@ -157,7 +157,28 @@ def load_missions():
             else:
                 heli_str = 'TBD'
             pilots = d.get('Pilots', '')
-            m.append({'title': t, 'date': d.get('date',''), 'endDate': d.get('endDate', d.get('date','')), 'status': d.get('status','pending'), 'helicopters': heli_str, 'pilots': pilots})
+            # Auto-determine status from dates
+            # past = ended before today (grey)
+            # active = happening now (green)
+            # pending = future, unconfirmed (red)
+            # confirmed = future, confirmed (blue)
+            raw_status = d.get('status','pending')
+            start = d.get('date','')
+            end = d.get('endDate', start)
+            if raw_status in ('past', 'complete'):
+                auto_status = raw_status
+            elif start:
+                ts = TODAY.strftime("%Y-%m-%d")
+                if end and end < ts:
+                    auto_status = 'past'
+                elif start <= ts and (not end or end >= ts):
+                    auto_status = 'active'
+                else:
+                    # Future mission — use frontmatter status
+                    auto_status = raw_status if raw_status in ('confirmed', 'pending') else 'pending'
+            else:
+                auto_status = raw_status
+            m.append({'title': t, 'date': start, 'endDate': end, 'status': auto_status, 'helicopters': heli_str, 'pilots': pilots})
     m.sort(key=lambda x: x['date'] if x['date'] else 'zzzz')
     print(f"✅ Loaded {len(m)} missions")
     return m
